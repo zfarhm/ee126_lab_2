@@ -97,7 +97,7 @@ void BaseCache::initDerivedParams() {
     // printf("assoc: %i",associativity);
     // printf("sets: %i",numSets);
 
-    printf("num sets: %i, index bits: %i, offset bits: %i, tag bits: %i",numSets,indexBits, offsetBits, tagBits);
+    printf("num sets: %i, index bits: %i, offset bits: %i, tag bits: %i\n",numSets,indexBits, offsetBits, tagBits);
 }
 
 //WRITE ME
@@ -144,7 +144,7 @@ void BaseCache::clearCache() {
 }
 
 int BaseCache::give_replace_index(uint32_t index_bits){
-    printf("in function\n");
+    // printf("in function\n");
 
     int LRU;
 
@@ -152,15 +152,12 @@ int BaseCache::give_replace_index(uint32_t index_bits){
     if (LRUvector[index_bits].empty()){
         printf("LRU is empty!!!\n");
         LRU = 0;
-
-    // if still filling up
-    }else if((0 < LRUvector[index_bits].size()) && (LRUvector[index_bits].size() < associativity)){
+    }else{
         LRU = LRUvector[index_bits].front();
-    }else if (LRUvector[index_bits].size == associativity){
-
     }
 
     return LRU;
+
 
     // // given a set, return the least recently used index
     // // just grab the first item in a specific row from the vector
@@ -201,18 +198,17 @@ void BaseCache::updateLRU(uint32_t index_bits, int new_way){
     // given a set
     // if it's empty or not full, just add the position
     if ((LRUvector[index_bits].empty()) || LRUvector[index_bits].size() < associativity ){
-        printf("adding new way of %i to MRU\n",new_way);
+        printf("LRU MATRIX NOT FULL:%i to MRU\n",new_way);
         LRUvector[index_bits].push_back(new_way);
     // if it's full, put the position in the MRU spot
     }else if(LRUvector[index_bits].size() == associativity){
-        printf("LRU MATRIX FULL --> evict the front thing\n");
         // remove the first thing (LRU)
         LRUvector[index_bits].erase(LRUvector[index_bits].begin());
         // add the latest MRU
-        printf("adding new way of %i to MRU\n",new_way);
+        printf("LRU MATRIX FULL: LRU REMOVED, %i to MRU\n",new_way);
         LRUvector[index_bits].push_back(new_way);
     }
-
+        cout << "Current LRU vector: ";
 
         for (size_t j = 0; j < LRUvector.size(); j++){
             for (size_t i = 0; i < LRUvector[j].size(); i++){
@@ -220,15 +216,11 @@ void BaseCache::updateLRU(uint32_t index_bits, int new_way){
         }
     }
         printf("\n");
-
 }
 
 void BaseCache::evictBlock(uint32_t index_bits, int position){
     printf("evict block\n");
 }
-
-
-
 
 //WRITE ME
 //Read data
@@ -240,7 +232,7 @@ void BaseCache::evictBlock(uint32_t index_bits, int position){
 bool BaseCache::read(uint32_t addr, uint32_t *data) {
     uint32_t tag = getTag(addr);
     uint32_t index = getIndex(addr); // which set you are on
-    // uint32_t offset = getOffset(addr);
+    uint32_t offset = getOffset(addr);
 
     // check the specific index
     for (uint32_t j = 0; j < associativity; j++){
@@ -259,7 +251,9 @@ bool BaseCache::read(uint32_t addr, uint32_t *data) {
         }
     }
 
-    return true;
+
+
+    return 0;
 }
 
 //WRITE ME
@@ -272,12 +266,19 @@ bool BaseCache::write(uint32_t addr, uint32_t data) {
     uint32_t index = getIndex(addr); // which set you are on
     uint32_t offset = getOffset(addr);
 
-    cout << "tag is " << tag << " offset is " << offset << " index is " << index << endl;
+    cout << "TAG: " << tag << " OFFSET:" << offset << " INDEX:" << index << endl;
 
     bool hit = false;
+    uint32_t how_full = 0;
 
     // write to a line that is invalid or 
     for (uint32_t j = 0; j < associativity; j++){
+
+        if (cacheLines[index][j].valid == true){
+            // see how full the cache is
+            how_full++;
+        }
+
         if ((cacheLines[index][j].tag == tag) && (cacheLines[index][j].valid == true)){
             printf("***WRITE HIT***\n");
             hit = true;
@@ -287,35 +288,42 @@ bool BaseCache::write(uint32_t addr, uint32_t data) {
             
             // make sure to update LRU
 
-        }}
+        }
+    }
+
+    printf("CACHE STATUS: Index: %i, Valid Entries: %i\n",index,how_full);
 
         if (!hit){
             printf("***WRITE MISS***\n");
             hit = false;
-            
-            // find which one to evict
-            printf("find\n");
-            int way = give_replace_index(index);
-            printf("\t\tLRU is %i****\n",way);
+            int way = 0;
 
-            // actually evict it
-            printf("evict\n");
-            cacheLines[index][way].tag = 0;
-            cacheLines[index][way].data = nullptr;
-            cacheLines[index][way].valid = false;
+            // if its full, need to figure out which one to get rid of
+            if (how_full == associativity){
+                // printf("find\n");
+                way = give_replace_index(index);
+
+                // actually evict it
+                // printf("evict\n");
+                cacheLines[index][way].tag = 0;
+                cacheLines[index][way].data = nullptr;
+                cacheLines[index][way].valid = false;
+            // if its not full, its just the next 
+            } else{
+                way = how_full;
+            }
 
             // add the new data to evicted ones spot
-            printf("add\n");
+            // printf("add the data to position %i\n",way);
             cacheLines[index][way].tag = tag;
             cacheLines[index][way].data = &data;
             cacheLines[index][way].valid = true;
             
             // make sure to update LRU
-            printf("update LRU\n");
+            // printf("update LRU\n");
             updateLRU(index,way);
 
         }
-
     return hit;
 }
 
