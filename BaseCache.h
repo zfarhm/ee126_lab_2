@@ -2,6 +2,8 @@
 #define __BASE_CACHE_H__
 
 #include <iostream>
+#include <vector>
+using namespace std;
 
 #define ADDR_BITS 32
 typedef struct _cacheLine {
@@ -18,12 +20,18 @@ class BaseCache{
   	uint32_t cacheSize; //in Bytes
   	uint32_t associativity;
   	uint32_t blockSize;  //in Bytes
-    cacheLine **cacheLines;
-    	
+    cacheLine** cacheLines;
+
+	std::vector<std::vector<int>> LRUvector; // empty vector to track LRU
+	
    	//cache derived parameters
     //define any additional parameters like number of
     //sets, index/tag bits or whatever is needed to
     //implement correct cache behavior.
+	int numSets;
+	int indexBits;
+	int offsetBits;
+	int tagBits;
 	  //WRITE ME
 
 	  //cache access statistics
@@ -71,6 +79,11 @@ class BaseCache{
 	  void createCache();
 	  //Reset cache
 	  void clearCache();
+
+	void returnLRU(uint32_t index_bits);
+	void updateLRU(uint32_t index_bits,int MRUposition);
+	void evictBlock(uint32_t index_bits,int position);
+
 	  //Read data
 	  //return true if it was a hit, false if it was a miss
 	  //data is only valid if it was a hit, input data pointer
@@ -80,7 +93,11 @@ class BaseCache{
 	  //Function returns write hit or miss status. 
 	  bool write(uint32_t addr, uint32_t data);
 
-	  /********ADD ANY ADDITIONAL METHODS IF REQUIRED*********/	  
+	  /********ADD ANY ADDITIONAL METHODS IF REQUIRED*********/	 
+	  uint32_t getTag(uint32_t addr);
+	  uint32_t getIndex(uint32_t addr);
+	  uint32_t getOffset(uint32_t addr);
+	   
 	  //Destructor to free all allocated memeroy.
 	  ~BaseCache();
 };

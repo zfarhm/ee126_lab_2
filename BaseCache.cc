@@ -6,41 +6,88 @@ using namespace std;
 //WRITE ME
 //Default constructor to set everything to '0'
 BaseCache::BaseCache() {
+    printf("\t-->default constructor\n");
+    setCacheSize(0);
+    setAssociativity(0);
+    setBlockSize(0);
+    printf("\t-->end of default constructor\n");
 }
 
 //WRITE ME
 //Constructor to initialize cache parameters, create the cache and clears it
 BaseCache::BaseCache(uint32_t _cacheSize, uint32_t _associativity, uint32_t _blockSize) {
+    printf("\t-->secondary constructor\n");
+    setCacheSize(_cacheSize);
+    setAssociativity(_associativity);
+    setBlockSize(_blockSize);
+    
+    initDerivedParams();
+    createCache();
+    resetStats();
+    
+    printf("\t-->end of secondary constructor\n");
 }
 
 //WRITE ME
 //Set cache base parameters
-void BaseCache::setCacheSize(uint32_t _cacheSize) {}
-void BaseCache::setAssociativity(uint32_t _associativity) {}
-void BaseCache::setBlockSize(uint32_t _blockSize) {}
+void BaseCache::setCacheSize(uint32_t _cacheSize) {
+    cacheSize = _cacheSize;
+}
+void BaseCache::setAssociativity(uint32_t _associativity) {
+    associativity = _associativity;
+}
+void BaseCache::setBlockSize(uint32_t _blockSize) {
+    blockSize = _blockSize;
+}
 
 //WRITE ME
 //Get cache base parameters
-uint32_t BaseCache::getCacheSize() {}
-uint32_t BaseCache::getAssociativity() {}
-uint32_t BaseCache::getBlockSize() {}
+uint32_t BaseCache::getCacheSize() {
+    return cacheSize;
+}
+uint32_t BaseCache::getAssociativity() {
+    return associativity;
+}
+uint32_t BaseCache::getBlockSize() {
+    return blockSize;
+}
 
 //WRITE ME
 //Get cache access statistics
-uint32_t BaseCache::getReadHits() {}
-uint32_t BaseCache::getReadMisses() {}
-uint32_t BaseCache::getWriteHits() {}
-uint32_t BaseCache::getWriteMisses() {}
-double BaseCache::getReadHitRate() {}
-double BaseCache::getReadMissRate() {}
-double BaseCache::getWriteHitRate() {}
-double BaseCache::getWriteMissRate() {}
-double BaseCache::getOverallHitRate() {}
-double BaseCache::getOverallMissRate() {}
+// uint32_t BaseCache::getReadHits() {}
+// uint32_t BaseCache::getReadMisses() {}
+// uint32_t BaseCache::getWriteHits() {}
+// uint32_t BaseCache::getWriteMisses() {}
+// double BaseCache::getReadHitRate() {}
+// double BaseCache::getReadMissRate() {}
+// double BaseCache::getWriteHitRate() {}
+// double BaseCache::getWriteMissRate() {}
+// double BaseCache::getOverallHitRate() {}
+// double BaseCache::getOverallMissRate() {}
 
 //WRITE ME
 //Initialize cache derived parameters
 void BaseCache::initDerivedParams() {
+    numSets = cacheSize / (associativity * blockSize);
+
+    indexBits = log2(numSets);
+    offsetBits = log2(blockSize);
+    tagBits = ADDR_BITS - indexBits - offsetBits;
+
+    std::vector<int> LRUvector_singleRow(associativity,0);
+    vector<vector<int>> LRUvector(numSets,LRUvector_singleRow);
+
+    // for (int j = 0; j < LRUvector.size(); j ++){
+    //     for (int i = 0; i < LRUvector[j].size(); i++){
+    //         printf("%f ",LRUvector[j,i]);
+    //     }
+    //     printf("\n");
+    // }
+
+    // printf("assoc: %i",associativity);
+    // printf("sets: %i",numSets);
+
+    printf("num sets: %i, index bits: %i, offset bits: %i, tag bits: %i",numSets,indexBits, offsetBits, tagBits);
 }
 
 //WRITE ME
@@ -51,12 +98,58 @@ void BaseCache::resetStats() {
 //WRITE ME
 //Create cache and clear it
 void BaseCache::createCache() {
+    printf("\t-->creating cache\n");
+    // because cacheLines is a pointer to a pointer, assume 2D matrix
+    // is desired because easier to find way and set this way 
+    // create
+
+    // this helped me a lot
+    // https://www.geeksforgeeks.org/how-to-declare-a-2d-array-dynamically-in-c-using-new-operator/
+    
+    // create bunch of pointers that have memory for the number of sets
+    cacheLines = new cacheLine*[numSets];
+
+    // for each new pointers created create data in the other direction for the length of associativity
+    for (int i = 0; i < numSets; i++){
+        cacheLines[i] = new cacheLine[associativity];
+    }
+
+    // now can reference the cache in 2D
+    // x is set and y is associativity
+    for (uint32_t x = 0; x < associativity; x++){
+        for (int y = 0; y < numSets; y++){
+            cacheLines[x][y].tag = 0;
+            cacheLines[x][y].data = NULL;
+            cacheLines[x][y].valid = false;
+        }
+    }
+    
+    // clearCache();
 }
 
 //WRITE ME
 //Reset cache
 void BaseCache::clearCache() {
+    delete[] cacheLines;
 }
+
+void BaseCache::returnLRU(uint32_t index_bits){
+    // given a set, return the least recently used index
+    // just grab the first item in a specific row from the vector
+}
+
+void BaseCache::updateLRU(uint32_t index_bits, int MRUposition){
+    // given a set
+    // if it's empty or not full, just add the position
+    // if it's full, put the position in the MRU spot
+}
+
+void BaseCache::evictBlock(uint32_t index_bits, int position){
+    printf("evict block\n");
+}
+
+
+
 
 //WRITE ME
 //Read data
@@ -66,12 +159,83 @@ void BaseCache::clearCache() {
 //bits. You can choose to separate the LRU bits update into
 // a separate function that can be used from both read() and write().
 bool BaseCache::read(uint32_t addr, uint32_t *data) {
+    uint32_t tag = getTag(addr);
+    uint32_t index = getIndex(addr); // which set you are on
+    // uint32_t offset = getOffset(addr);
+
+    // check the specific index
+    for (uint32_t j = 0; j < associativity; j++){
+        if ((cacheLines[j][index].tag == tag)){
+            printf("***READ HIT***\n");
+            // make sure to update LRU
+            cout << "tag is " << cacheLines[index][j].tag << endl; 
+            printf("found data!\n");
+        }
+        else{
+            printf("***READ MISS***\n");
+            // update LRU if valid
+            // do nothing if invalid 
+            printf("update pointer??\n");
+            break;
+        }
+    }
+
+    return true;
 }
 
 //WRITE ME
 //Write data
 //Function returns write hit or miss status. 
 bool BaseCache::write(uint32_t addr, uint32_t data) {
+
+    bool status;
+
+    uint32_t tag = getTag(addr);
+    uint32_t index = getIndex(addr); // which set you are on
+    uint32_t offset = getOffset(addr);
+
+    cout << "tag is " << tag << " offset is " << offset << " index is " << index << endl;
+
+    // write to a line that is invalid or 
+    for (uint32_t j = 0; j < associativity; j++){
+        if (cacheLines[index][j].tag == tag){
+            printf("data already in there\n");
+            status = true;
+            break;
+        }
+        else{
+            printf("WRITE MISS\n");
+            cacheLines[index][j].tag = tag;
+            cacheLines[index][j].data = &data;
+            cacheLines[index][j].valid = true;
+            status = false;
+            break;
+        }
+    }
+
+    return status;
+}
+
+uint32_t BaseCache::getTag(uint32_t addr){
+    int ind_off = indexBits + offsetBits;
+    uint32_t shifted = addr >> ind_off;
+    return shifted;
+}
+
+uint32_t BaseCache::getIndex(uint32_t addr){
+    int ind_off = offsetBits;
+    uint32_t shifted = addr >> ind_off;
+    // printf("index bits: %i\n",indexBits);
+    uint32_t shiftBits =  (1 << indexBits) - 1;
+    uint32_t index_bits = shifted & shiftBits;
+    return index_bits;
+}
+
+uint32_t BaseCache::getOffset(uint32_t addr){
+    // printf("offset bits: %i\n",offsetBits);
+    uint32_t shiftBits =  (1 << offsetBits) - 1;
+    uint32_t offset_bits = addr & shiftBits;
+    return offset_bits;
 }
 
 //WRITE ME
@@ -79,3 +243,16 @@ bool BaseCache::write(uint32_t addr, uint32_t data) {
 BaseCache::~BaseCache() {
 }
 
+
+// int main(int argc, char **argv) {
+//     // printf("hello\n");
+//     // //1024 byte cache, 4-way associativity, 64 byte block size
+//     // BaseCache another(1024,4,64);
+
+//     // uint32_t addr = 0x9876abca;
+//     // uint32_t data = 0x349823ab;
+
+//     // bool flag = another.write(addr,data);
+
+//     // bool flagss = another.read(addr,&data);
+// }
