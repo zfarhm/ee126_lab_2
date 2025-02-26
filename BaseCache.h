@@ -3,6 +3,8 @@
 
 #include <iostream>
 #include <vector>
+#include <bitset>
+#include <sstream>
 using namespace std;
 
 #define ADDR_BITS 32
@@ -22,7 +24,7 @@ class BaseCache{
   	uint32_t blockSize;  //in Bytes
     cacheLine** cacheLines;
 
-	std::vector<std::vector<int>> LRUvector; // empty vector to track LRU
+	vector<vector<int>> LRUvector; // empty vector to track LRU
 	
    	//cache derived parameters
     //define any additional parameters like number of
@@ -80,8 +82,8 @@ class BaseCache{
 	  //Reset cache
 	  void clearCache();
 
-	void returnLRU(uint32_t index_bits);
-	void updateLRU(uint32_t index_bits,int MRUposition);
+	int give_replace_index(uint32_t index_bits);
+	void updateLRU(uint32_t index_bits, int new_way);
 	void evictBlock(uint32_t index_bits,int position);
 
 	  //Read data
