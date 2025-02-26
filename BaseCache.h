@@ -64,10 +64,12 @@ class BaseCache{
 	  uint32_t getReadMisses(); 
 	  uint32_t getWriteHits(); 
 	  uint32_t getWriteMisses(); 
+
 	  double getReadHitRate();
 	  double getReadMissRate();
 	  double getWriteHitRate();
 	  double getWriteMissRate();
+	  
 	  double getOverallHitRate();
 	  double getOverallMissRate();
 
