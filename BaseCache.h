@@ -5,6 +5,8 @@
 #include <vector>
 #include <bitset>
 #include <sstream>
+#include <cstring>
+
 using namespace std;
 
 #define ADDR_BITS 32
@@ -37,19 +39,25 @@ class BaseCache{
 	  //WRITE ME
 
 	  //cache access statistics
-	  uint32_t numReads;
-	  uint32_t numWrites;
-	  uint32_t numReadHits;
-	  uint32_t numReadMisses;
-	  uint32_t numWriteHits;
-	  uint32_t numWriteMisses;
+	  double numReads;
+	  double numWrites;
+	  double numReadHits;
+	  double numReadMisses;
+	  double numWriteHits;
+	  double numWriteMisses;
 
   public:
+
+	bool testMode;
+
     //Default constructor to set everything to '0'.
     BaseCache();        
     //Constructor to initialize cache parameters and to create the cache
     BaseCache(uint32_t _cacheSize, uint32_t _associativity, uint32_t _blockSize);
 	  //Set cache base parameters
+
+	void print_cache_valid();
+
     void setCacheSize(uint32_t _cacheSize); 
     void setAssociativity(uint32_t _associativity);
     void setBlockSize(uint32_t _blockSize);
@@ -60,16 +68,16 @@ class BaseCache{
     uint32_t getBlockSize(); 
 	
 	  //Get cache access statistics
-	  uint32_t getReadHits(); 
-	  uint32_t getReadMisses(); 
-	  uint32_t getWriteHits(); 
-	  uint32_t getWriteMisses(); 
+	  double getReadHits(); 
+	  double getReadMisses(); 
+	  double getWriteHits(); 
+	  double getWriteMisses(); 
 
 	  double getReadHitRate();
 	  double getReadMissRate();
 	  double getWriteHitRate();
 	  double getWriteMissRate();
-	  
+
 	  double getOverallHitRate();
 	  double getOverallMissRate();
 
@@ -84,7 +92,7 @@ class BaseCache{
 	  //Reset cache
 	  void clearCache();
 
-	int give_replace_index(uint32_t index_bits);
+	int get_LRU_way(uint32_t index_bits);
 	void updateLRU(uint32_t index_bits, int new_way);
 	void evictBlock(uint32_t index_bits,int position);
 

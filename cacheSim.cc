@@ -57,11 +57,11 @@ int main(int argc, char **argv) {
         fp_inp.close();
     }
     cout <<endl;
-    // cout << "Read Hits (HitRate): "<<BaseCache.getReadHits()<<" ("<<BaseCache.getReadHitRate()<<"%)"<<endl;
-    // cout << "Read Misses (MissRate): "<<BaseCache.getReadMisses() <<" ("<<BaseCache.getReadMissRate()<<"%)"<<endl;
-    // cout << "Write Hits (HitRate): "<<BaseCache.getWriteHits()<<" ("<<BaseCache.getWriteHitRate()<<"%)"<<endl;
-    // cout << "Write Misses (MissRate): "<<BaseCache.getWriteMisses() <<" ("<<BaseCache.getWriteMissRate()<<"%)"<<endl;
-    // cout << "Overall Hit Rate: "<<BaseCache.getOverallHitRate() <<"%" << endl;
-    // cout << "Overall Miss Rate: "<<BaseCache.getOverallMissRate()<<"%"<<endl;
+    cout << "Read Hits (HitRate): "<<BaseCache.getReadHits()<<" ("<<BaseCache.getReadHitRate()<<"%)"<<endl;
+    cout << "Read Misses (MissRate): "<<BaseCache.getReadMisses() <<" ("<<BaseCache.getReadMissRate()<<"%)"<<endl;
+    cout << "Write Hits (HitRate): "<<BaseCache.getWriteHits()<<" ("<<BaseCache.getWriteHitRate()<<"%)"<<endl;
+    cout << "Write Misses (MissRate): "<<BaseCache.getWriteMisses() <<" ("<<BaseCache.getWriteMissRate()<<"%)"<<endl;
+    cout << "Overall Hit Rate: "<<BaseCache.getOverallHitRate() <<"%" << endl;
+    cout << "Overall Miss Rate: "<<BaseCache.getOverallMissRate()<<"%"<<endl;
     return 1;
 }

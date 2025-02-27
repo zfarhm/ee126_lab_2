@@ -26,7 +26,9 @@ Sample input and output files are provided. Output files are generated for above
 cache specifications.
 
 You will implement LRU policy for cache line replacement for read and write
-misses. For a write miss you write data to LRU cache line and update its tag. Upon
+misses. 
+
+For a write miss you write data to LRU cache line and update its tag.Upon
 read miss, typically we fetch data from lower cache levels or main memory and
 replace the LRU cache line with new data. However, for this part of the
 assignment as we don't ask you to implement cache hierarchy, update only tag of
