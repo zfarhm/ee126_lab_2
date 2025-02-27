@@ -17,7 +17,7 @@ BaseCache::BaseCache() {
 //WRITE ME
 //Constructor to initialize cache parameters, create the cache and clears it
 BaseCache::BaseCache(uint32_t _cacheSize, uint32_t _associativity, uint32_t _blockSize) {
-    testMode = true;
+    testMode = false;
 
     setCacheSize(_cacheSize);
     setAssociativity(_associativity);
