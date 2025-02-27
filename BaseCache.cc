@@ -110,16 +110,16 @@ void BaseCache::initDerivedParams() {
 
     tagBits = ADDR_BITS - indexBits - offsetBits;
 
-    LRUvector = vector<vector<int>>(numSets,vector<int>(0,0));
+    // initialize LRU vector/matrix
+    // initialize all to 0
+    LRUvector = vector<vector<int>>(numSets,vector<int>(associativity,0));
 
-    // // testing
-    // for (size_t j = 0; j < LRUvector.size(); j++){
-    //     for (size_t i = 0; i < LRUvector[j].size(); i++){
-    //         // printf("%f ",LRUvector[j][i]);
-    //         cout << LRUvector[j][i];
-    //     }
-    //     printf("\n");
-    // }
+    // create base with 0 --> # ways for each set
+    for (size_t j = 0; j < LRUvector.size(); j++){
+        for (size_t i = 0; i < LRUvector[j].size(); i++){
+            LRUvector[j][i] = i;
+        }
+    }
 
     if (testMode){
         printf("num sets: %i, index bits: %i, offset bits: %i, tag bits: %i\n",numSets,indexBits, offsetBits, tagBits);
@@ -138,6 +138,7 @@ void BaseCache::resetStats() {
 }
 
 void BaseCache::print_cache_valid(){
+    cout << "Current Cache: " << endl;
     for (int x = 0; x < numSets; x++){
         printf("%i: ",x);
         for (uint32_t y = 0; y < associativity; y++){
@@ -148,6 +149,17 @@ void BaseCache::print_cache_valid(){
             } 
         }
         printf("\n");
+    }
+    printf("\n");
+}
+
+void BaseCache::print_LRU_matrix(){
+    cout << "Current LRU vector: " << endl;
+    for (size_t j = 0; j < LRUvector.size(); j++){
+        printf("%li: ",j);
+        for (size_t i = 0; i < LRUvector[j].size(); i++){
+            cout << LRUvector[j][i];
+    }            printf("\n");
     }
     printf("\n");
 }
@@ -255,6 +267,48 @@ int BaseCache::get_LRU_way(uint32_t index_bits){
     //     // }
     //     printf("\n");
     // }
+    
+}
+
+
+int BaseCache::LRU_miss_extract(uint32_t index_bits){
+    // gets the value and moves it to the back
+
+    // find the current LRU value
+    int LRU = 0;
+    // if still empty
+    if (LRUvector[index_bits].empty()){
+        LRU = 0;
+    }else{
+        LRU = LRUvector[index_bits].front();
+    }
+        // remove first entry (LRU)
+        LRUvector[index_bits].erase(LRUvector[index_bits].begin());
+        // add to the back
+        LRUvector[index_bits].push_back(LRU);
+
+    if(testMode){
+            print_LRU_matrix();
+        }
+    return LRU;
+}
+
+void BaseCache::LRU_hit_move(uint32_t index_bits, int way ){
+    // find the value at the index
+    int LRU_index = 0;
+    for (int j = 0; j < associativity; j++){
+        if (LRUvector[index_bits][j] == way){
+            LRU_index = j;
+        }
+    }
+        // remove the value at the index
+        LRUvector[index_bits].erase(LRUvector[index_bits].begin() + LRU_index);
+
+        // add to the back
+        LRUvector[index_bits].push_back(way);
+    if(testMode){
+    print_LRU_matrix();
+}
 }
 
 void BaseCache::updateMRU_adding(uint32_t index_bits, int new_way){
@@ -267,16 +321,6 @@ void BaseCache::updateMRU_adding(uint32_t index_bits, int new_way){
 
     // }
 
-    if (testMode){
-        cout << "Current LRU vector: ";
-
-        for (size_t j = 0; j < LRUvector.size(); j++){
-            printf("%li: ",j);
-            for (size_t i = 0; i < LRUvector[j].size(); i++){
-                cout << LRUvector[j][i];
-        }            printf("\n");
-        }
-    }    
 }
 
 void BaseCache::updateLRU_static(uint32_t index_bits, int used_way){
@@ -294,19 +338,8 @@ void BaseCache::updateLRU_static(uint32_t index_bits, int used_way){
 
     // }
 
-    if (testMode){
-        cout << "Current LRU vector: ";
 
-        for (size_t j = 0; j < LRUvector.size(); j++){
-            printf("%li: ",j);
-            for (size_t i = 0; i < LRUvector[j].size(); i++){
-                cout << LRUvector[j][i];
-        }            printf("\n");
-        }
-    }    
 }
-
-
 
 void BaseCache::evictBlock(uint32_t index, int way){
     cacheLines[index][way].tag = 0;
@@ -316,7 +349,6 @@ void BaseCache::evictBlock(uint32_t index, int way){
     cacheLines[index][way].data = new uint32_t[blockSize];
     // cacheLines[index][way].data = nullptr;
 }
-
 
 void BaseCache::count_valids(uint32_t index){
     how_full = 0;
@@ -349,59 +381,34 @@ bool BaseCache::read(uint32_t addr, uint32_t *data) {
 
     bool hit = false;
     int way = 0;
+    int LRU = 0;
 
-    count_valids(index);
+    // count_valids(index);
 
     // write to a line that is invalid or 
     for (uint32_t j = 0; j < associativity; j++){
         if ((cacheLines[index][j].tag == tag) && (cacheLines[index][j].valid == true)){
-            printf("***READ HIT***\n");
+            // printf("***READ HIT***\n");
             hit = true;
 
-
-            // if its full, need to figure out which one to modify (tag only)
-            if (how_full == associativity){
-                way = get_LRU_way(index);
-                updateLRU_static(index,way);
-            // if its not full, its just the next 
-            } else{
-                way = how_full;
-                updateLRU_static(index,way);
-            }
-
-            // if you found the existing tag and its valid, find address of the data
-            // data = cacheLines[index][way].data[offset];
+            LRU_hit_move(index, j);
 
             // used https://www.geeksforgeeks.org/memcpy-in-cc/
             memcpy(&cacheLines[index][way].data[offset], data, sizeof(uint32_t));
-            
-            cout << "how full is " << how_full <<  " index is " << index << " way is " << way << endl;
-
             break;
         }
-    }
-    if (testMode){
-    printf("CACHE STATUS: Index: %i, Valid Entries: %i\n",index,how_full);
     }
         if (!hit){
             // printf("***READ MISS***\n");
             hit = false;
+
             
-            // if its full, need to figure out which one to modify (tag only)
-            if (how_full == associativity){
-                way = get_LRU_way(index);
-                updateLRU_static(index,way);
-            // if its not full, its just the next 
-            } else{
-                way = how_full;
-                updateLRU_static(index,way);
-            }
+            LRU = LRU_miss_extract(index);
 
             // because its read miss, just update tag and LRU cache line
             // do not alter data
-            cacheLines[index][way].tag = tag;
-            cacheLines[index][way].valid = true;
-
+            cacheLines[index][LRU].tag = tag;
+            cacheLines[index][LRU].valid = true;
         }
         
         numReads++;
@@ -434,34 +441,23 @@ bool BaseCache::write(uint32_t addr, uint32_t data) {
 
     bool hit = false;
     int way = 0;
+    int LRU = 0;
 
-    count_valids(index);
+    // count_valids(index);
 
     // write to a line that is invalid or 
     for (uint32_t j = 0; j < associativity; j++){
         if ((cacheLines[index][j].tag == tag) && (cacheLines[index][j].valid == true)){
-            printf("***WRITE HIT***\n");
+            // printf("***WRITE HIT***\n");
             hit = true;
 
+            LRU_hit_move(index, j);
 
-
-            // if its full, need to figure out which one to modify (tag only)
-            if (how_full == associativity){
-                way = get_LRU_way(index);
-                updateLRU_static(index,way);
-            // if its not full, its just the next 
-            } else{
-                way = how_full;
-                updateMRU_adding(index,way);
-            }
-
-            cacheLines[index][way].tag = tag;
-            cacheLines[index][way].valid = true;
-
-            // cout << "index is " << index << " storing data " << data << endl;
+            cacheLines[index][j].tag = tag;
+            cacheLines[index][j].valid = true;
 
             // used https://www.geeksforgeeks.org/memcpy-in-cc/
-            memcpy(&cacheLines[index][way].data[offset], &data, sizeof(uint32_t));
+            memcpy(&cacheLines[index][j].data[offset], &data, sizeof(uint32_t));
             
             // make sure to update LRU
             break;
@@ -469,29 +465,24 @@ bool BaseCache::write(uint32_t addr, uint32_t data) {
     }
 
         if (!hit){
-            printf("***WRITE MISS***\n");
+            // printf("***WRITE MISS***\n");
             hit = false;
 
-            // if its full, need to figure out which one to get rid of
-            if (how_full == associativity){
-                way = get_LRU_way(index);
-                updateLRU_static(index,way);
-            // if its not full, its just the next 
-            } else{
-                way = how_full;
-                updateMRU_adding(index,way);
+            LRU = LRU_miss_extract(index);
+
+            // if there is data in there, evict it
+            if (cacheLines[index][way].valid){
+                evictBlock(index,LRU);
             }
 
-            cout << "way is " << way << endl;
             // add the new data to evicted ones spot
             // printf("add the data to position %i\n",way);
-            cacheLines[index][way].tag = tag;
-            cacheLines[index][way].valid = true;
+            cacheLines[index][LRU].tag = tag;
+            cacheLines[index][LRU].valid = true;
 
             // used https://www.geeksforgeeks.org/memcpy-in-cc/
-            memcpy(&cacheLines[index][way].data[offset], &data, sizeof(uint32_t));
+            memcpy(&cacheLines[index][LRU].data[offset], &data, sizeof(uint32_t));
 
-            
             // make sure to update LRU
             // printf("update LRU\n");
         }

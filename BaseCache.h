@@ -59,6 +59,7 @@ class BaseCache{
 	  //Set cache base parameters
 
 	void print_cache_valid();
+	void print_LRU_matrix();
 
 	void count_valids(uint32_t index);
 
@@ -100,6 +101,10 @@ class BaseCache{
 	void updateLRU_static(uint32_t index_bits, int used_way);
 	void updateMRU_adding(uint32_t index_bits, int new_way);
 	void evictBlock(uint32_t index_bits,int position);
+
+	int LRU_miss_extract(uint32_t index_bits);
+	void LRU_hit_move(uint32_t index_bits, int way);
+
 
 	  //Read data
 	  //return true if it was a hit, false if it was a miss
