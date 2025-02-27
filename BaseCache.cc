@@ -394,7 +394,7 @@ bool BaseCache::read(uint32_t addr, uint32_t *data) {
             LRU_hit_move(index, j);
 
             // used https://www.geeksforgeeks.org/memcpy-in-cc/
-            memcpy(&cacheLines[index][way].data[offset], data, sizeof(uint32_t));
+            memcpy(data, &cacheLines[index][way].data[offset], sizeof(uint32_t));
             break;
         }
     }
