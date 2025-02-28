@@ -298,7 +298,7 @@ int BaseCache::LRU_miss_extract(uint32_t index_bits){
 void BaseCache::LRU_hit_move(uint32_t index_bits, int way ){
     // find the value at the index
     int LRU_index = 0;
-    for (int j = 0; j < associativity; j++){
+    for (uint32_t j = 0; j < associativity; j++){
         if (LRUvector[index_bits][j] == way){
             LRU_index = j;
         }
@@ -362,7 +362,6 @@ void BaseCache::count_valids(uint32_t index){
     }
 
     cout << "for index " << index << " counted " <<how_full << endl;
-
 }
 
 //WRITE ME
@@ -395,6 +394,7 @@ bool BaseCache::read(uint32_t addr, uint32_t *data) {
 
             LRU_hit_move(index, j);
 
+            
             memcpy(data, &cacheLines[index][way].data[offset], sizeof(uint32_t));
             break;
         }
