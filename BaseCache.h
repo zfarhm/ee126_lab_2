@@ -101,8 +101,6 @@ class BaseCache{
 	  void clearCache();
 
 	int get_LRU_way(uint32_t index_bits);
-	void updateLRU_static(uint32_t index_bits, int used_way);
-	void updateMRU_adding(uint32_t index_bits, int new_way);
 	void evictBlock(uint32_t index_bits,int position);
 
 	int LRU_miss_extract(uint32_t index_bits);

@@ -117,7 +117,7 @@ void BaseCache::initDerivedParams() {
     tagBits = ADDR_BITS - indexBits - offsetBits;
     
     numWords = blockSize / wordSize;
-    printf("num words is %i\n",numWords);
+    // printf("num words is %i\n",numWords);
 
     // initialize LRU vector/matrix
     // initialize all to 0
@@ -173,7 +173,6 @@ void BaseCache::print_LRU_matrix(){
     printf("\n");
 }
 
-
 //WRITE ME
 //Create cache and clear it
 void BaseCache::createCache() {
@@ -201,9 +200,8 @@ void BaseCache::createCache() {
         for (uint32_t j = 0; j < associativity; j++){
             // for each 
             cacheLines[i][j].data = new uint32_t[numWords];
+    }   
     }
-}
-
     // make sure valid and tag are set
     for (int i = 0; i < numSets; i++){
         for (uint32_t j = 0; j < associativity; j++){
@@ -272,7 +270,6 @@ int BaseCache::get_LRU_way(uint32_t index_bits){
     
 }
 
-
 int BaseCache::LRU_miss_extract(uint32_t index_bits){
     // gets the value and moves it to the back
 
@@ -311,36 +308,6 @@ void BaseCache::LRU_hit_move(uint32_t index_bits, int way ){
     if(testMode){
     print_LRU_matrix();
 }
-}
-
-void BaseCache::updateMRU_adding(uint32_t index_bits, int new_way){
-    // given a set
-    // if it's empty or not full, just add the position
-    // if ((LRUvector[index_bits].empty()) || LRUvector[index_bits].size() < associativity ){
-        // printf("LRU MATRIX NOT FULL:%i to MRU\n",new_way);
-        LRUvector[index_bits].push_back(new_way);
-    // if it's full, put the position in the MRU spot
-
-    // }
-
-}
-
-void BaseCache::updateLRU_static(uint32_t index_bits, int used_way){
-        // given a set
-    // if it's empty or not full, just add the position
-    // if(LRUvector[index_bits].size() == associativity){
-        // remove the first thing (LRU)
-        if (!LRUvector[index_bits].empty()){
-        LRUvector[index_bits].erase(LRUvector[index_bits].begin());
-        // add the latest MRU
-        LRUvector[index_bits].push_back(used_way);
-    }else{
-        LRUvector[index_bits].push_back(used_way);
-    }
-
-    // }
-
-
 }
 
 void BaseCache::evictBlock(uint32_t index, int way){
@@ -394,7 +361,6 @@ bool BaseCache::read(uint32_t addr, uint32_t *data) {
 
             LRU_hit_move(index, j);
 
-            
             memcpy(data, &cacheLines[index][way].data[offset], sizeof(uint32_t));
             break;
         }
@@ -403,7 +369,6 @@ bool BaseCache::read(uint32_t addr, uint32_t *data) {
             // printf("***READ MISS***\n");
             hit = false;
 
-            
             LRU = LRU_miss_extract(index);
 
             // because its read miss, just update tag and LRU cache line
@@ -430,7 +395,6 @@ bool BaseCache::read(uint32_t addr, uint32_t *data) {
 //Write data
 //Function returns write hit or miss status. 
 bool BaseCache::write(uint32_t addr, uint32_t data) {
-
 
     uint32_t tag = getTag(addr);
     uint32_t index = getIndex(addr); // which set you are on
@@ -526,7 +490,6 @@ BaseCache::~BaseCache() {
     clearCache();
 
 }
-
 
 // int main(int argc, char **argv) {
 //     // printf("hello\n");
