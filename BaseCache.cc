@@ -7,6 +7,7 @@ using namespace std;
 //Default constructor to set everything to '0'
 BaseCache::BaseCache() {
     testMode = false;
+    setWordSize(4);
 
     setCacheSize(0);
     setAssociativity(0);
@@ -18,6 +19,7 @@ BaseCache::BaseCache() {
 //Constructor to initialize cache parameters, create the cache and clears it
 BaseCache::BaseCache(uint32_t _cacheSize, uint32_t _associativity, uint32_t _blockSize) {
     testMode = false;
+    setWordSize(4);
 
     setCacheSize(_cacheSize);
     setAssociativity(_associativity);
@@ -38,6 +40,10 @@ void BaseCache::setAssociativity(uint32_t _associativity) {
 }
 void BaseCache::setBlockSize(uint32_t _blockSize) {
     blockSize = _blockSize;
+}
+
+void BaseCache::setWordSize(uint32_t _wordSize){
+    wordSize = _wordSize;
 }
 
 //WRITE ME
@@ -109,6 +115,9 @@ void BaseCache::initDerivedParams() {
     offsetBits = log2(blockSize);
 
     tagBits = ADDR_BITS - indexBits - offsetBits;
+    
+    numWords = blockSize / wordSize;
+    printf("num words is %i\n",numWords);
 
     // initialize LRU vector/matrix
     // initialize all to 0
@@ -198,7 +207,7 @@ void BaseCache::createCache() {
     for (int i = 0; i < numSets; i++){
         for (uint32_t j = 0; j < associativity; j++){
             // for each 
-            cacheLines[i][j].data = new uint32_t[blockSize];
+            cacheLines[i][j].data = new uint32_t[numWords];
     }
 }
 
@@ -346,7 +355,7 @@ void BaseCache::evictBlock(uint32_t index, int way){
     cacheLines[index][way].valid = false;
 
     delete[] cacheLines[index][way].data;
-    cacheLines[index][way].data = new uint32_t[blockSize];
+    cacheLines[index][way].data = new uint32_t[numWords];
     // cacheLines[index][way].data = nullptr;
 }
 
@@ -524,6 +533,8 @@ uint32_t BaseCache::getOffset(uint32_t addr){
 //WRITE ME
 //Destructor to free all allocated memeroy.
 BaseCache::~BaseCache() {
+    clearCache();
+
 }
 
 

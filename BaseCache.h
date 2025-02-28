@@ -25,6 +25,8 @@ class BaseCache{
   	uint32_t associativity;
   	uint32_t blockSize;  //in Bytes
     cacheLine** cacheLines;
+	uint32_t wordSize; //in Bytes
+	int numWords;
 
 	vector<vector<int>> LRUvector; // empty vector to track LRU
 	
@@ -66,6 +68,7 @@ class BaseCache{
     void setCacheSize(uint32_t _cacheSize); 
     void setAssociativity(uint32_t _associativity);
     void setBlockSize(uint32_t _blockSize);
+	void setWordSize(uint32_t _wordSize);
         
     //Get cache base parameters
 	  uint32_t getCacheSize(); 
