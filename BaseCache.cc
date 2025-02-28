@@ -181,13 +181,6 @@ void BaseCache::createCache() {
     // because cacheLines is a pointer to a pointer, assume 2D matrix
     // is desired because easier to find way and set this way 
     // create
-
-    // this helped me a lot
-    // https://www.geeksforgeeks.org/how-to-declare-a-2d-array-dynamically-in-c-using-new-operator/
-
-    // also this for vectors
-    // https://www.digitalocean.com/community/tutorials/2d-vectors-in-c-plus-plus
-    
     // 
     // 
     // for (int i = 0; i < numSets; i++){
@@ -402,7 +395,6 @@ bool BaseCache::read(uint32_t addr, uint32_t *data) {
 
             LRU_hit_move(index, j);
 
-            // used https://www.geeksforgeeks.org/memcpy-in-cc/
             memcpy(data, &cacheLines[index][way].data[offset], sizeof(uint32_t));
             break;
         }
@@ -465,7 +457,6 @@ bool BaseCache::write(uint32_t addr, uint32_t data) {
             cacheLines[index][j].tag = tag;
             cacheLines[index][j].valid = true;
 
-            // used https://www.geeksforgeeks.org/memcpy-in-cc/
             memcpy(&cacheLines[index][j].data[offset], &data, sizeof(uint32_t));
             
             // make sure to update LRU
@@ -489,7 +480,6 @@ bool BaseCache::write(uint32_t addr, uint32_t data) {
             cacheLines[index][LRU].tag = tag;
             cacheLines[index][LRU].valid = true;
 
-            // used https://www.geeksforgeeks.org/memcpy-in-cc/
             memcpy(&cacheLines[index][LRU].data[offset], &data, sizeof(uint32_t));
 
             // make sure to update LRU

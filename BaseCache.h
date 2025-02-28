@@ -69,7 +69,7 @@ class BaseCache{
     void setAssociativity(uint32_t _associativity);
     void setBlockSize(uint32_t _blockSize);
 	void setWordSize(uint32_t _wordSize);
-        
+	
     //Get cache base parameters
 	  uint32_t getCacheSize(); 
     uint32_t getAssociativity(); 
