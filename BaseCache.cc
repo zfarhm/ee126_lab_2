@@ -207,14 +207,11 @@ void BaseCache::clearCache() {
     for (int i = 0; i < numSets; i++){
         for (uint32_t j = 0; j < associativity; j++){
             delete[] cacheLines[i][j].data;
-            cacheLines[i][j].data = nullptr;
         }
         delete[] cacheLines[i];
-        cacheLines[i] = nullptr;
     }
     
     delete[] cacheLines;
-    cacheLines = nullptr;
 
 }
 
@@ -263,7 +260,6 @@ void BaseCache::evictBlock(uint32_t index, int way){
     // printf("evict-----> i is %i way is %i\n",index,way);
     if (cacheLines[index][way].data){
         delete[] cacheLines[index][way].data;
-        cacheLines[index][way].data = nullptr;
         cacheLines[index][way].data = new uint32_t[numWords]();
     }
     // printf("num words is %i\n",numWords);
