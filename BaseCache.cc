@@ -346,7 +346,7 @@ bool BaseCache::read(uint32_t addr, uint32_t *data) {
             hit = true;
             LRU_hit_move(index, j);
 
-            memcpy(data, &cacheLines[index][way].data[offset], sizeof(uint32_t));
+            memcpy(data, &cacheLines[index][j].data[offset], sizeof(uint32_t));
             break;
         }
     }
