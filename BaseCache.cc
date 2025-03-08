@@ -173,7 +173,6 @@ void BaseCache::print_LRU_matrix(){
     printf("\n");
 }
 
-
 //WRITE ME
 //Create cache and clear it
 void BaseCache::createCache() {
@@ -201,9 +200,8 @@ void BaseCache::createCache() {
         for (uint32_t j = 0; j < associativity; j++){
             // for each 
             cacheLines[i][j].data = new uint32_t[numWords];
+    }   
     }
-}
-
     // make sure valid and tag are set
     for (int i = 0; i < numSets; i++){
         for (uint32_t j = 0; j < associativity; j++){
@@ -239,8 +237,43 @@ int BaseCache::get_LRU_way(uint32_t index_bits){
     }
 
     return LRU;
-}
 
+
+    // // given a set, return the least recently used index
+    // // just grab the first item in a specific row from the vector
+    // int LRU;
+    // for (size_t j = 0; j < LRUvector.size(); j++){
+    //     // if (!LRUvector[j].empty()){
+    //     //     printf("not empty\n");
+    //     // }else{
+    //     //     printf("empty\n");
+    //     // }
+    //     cout << "j is " << j << endl;
+    //     }
+
+    // int LRUsize = LRUvector[index_bits].size();
+    // printf("LRUsize = %i\n",LRUsize);
+    // LRU = LRUvector[index_bits].front();
+    // printf("LRU return: %i\n",LRU);
+    // return LRU;
+
+    // testing
+
+    // cout << "size is " << LRUvector.size();
+
+    // for (size_t j = 0; j < LRUvector.size(); j++){
+    //     if (LRUvector[j].empty()){
+    //         printf("size is zero");
+    //     }
+    //     // for (size_t i = 0; i < LRUvector[j].size(); i++){
+    //     //     // printf("%f ",LRUvector[j][i]);
+    //     //     cout << LRUvector[j][i];
+    //     //     // LRUvector[j,i] = 3;
+    //     // }
+    //     printf("\n");
+    // }
+    
+}
 
 int BaseCache::LRU_miss_extract(uint32_t index_bits){
     // gets the value and moves it to the back
@@ -312,13 +345,15 @@ bool BaseCache::read(uint32_t addr, uint32_t *data) {
             // printf("***READ HIT***\n");
             hit = true;
             LRU_hit_move(index, j);
-            memcpy(data, &cacheLines[index][j].data[offset], sizeof(uint32_t));
+
+            memcpy(data, &cacheLines[index][way].data[offset], sizeof(uint32_t));
             break;
         }
     }
         if (!hit){
             // printf("***READ MISS***\n");
             hit = false;
+
             LRU = LRU_miss_extract(index);
             // because its read miss, just update tag and LRU cache line
             // do not alter data
@@ -426,7 +461,6 @@ BaseCache::~BaseCache() {
     clearCache();
 
 }
-
 
 // int main(int argc, char **argv) {
 //     // printf("hello\n");
