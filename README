@@ -26,11 +26,35 @@ Sample input and output files are provided. Output files are generated for above
 cache specifications.
 
 You will implement LRU policy for cache line replacement for read and write
-misses. For a write miss you write data to LRU cache line and update its tag. Upon
+misses. 
+
+For a write miss you write data to LRU cache line and update its tag.Upon
 read miss, typically we fetch data from lower cache levels or main memory and
 replace the LRU cache line with new data. However, for this part of the
 assignment as we don't ask you to implement cache hierarchy, update only tag of
 the LRU cache line and leave the data untouched. 
+
+WRITE MISS
+** did not see the tag in the cache at all
+** find the LRU cache and evict
+-write tag/data to the evicted block
+-update LRU vector
+
+WRITE HIT
+**found the specific tag in the cache set we are looking in
+-replace the data with the provided data
+-update LRU vector
+
+READ MISS
+** cant find the data I want
+** find the LRU cache, but DONT EVICT
+-write just the tag to this selected block
+-update LRU vector
+
+READ HIT
+** found the specific tag in the cache set we are looking in
+-return the data
+-update LRU vector
 
 Assumptions:
 1. Writes and reads are always 32bits long.

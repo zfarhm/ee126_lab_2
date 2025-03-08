@@ -35,18 +35,22 @@ int main(int argc, char **argv) {
 	        if(BaseCache.write(address, data)) {
 	            cout <<"Write Hit : addr:0x"<<hex<<address;
 	            cout <<"     data:0x"<<hex<<data<<"\n";
+				// printf("\n\n\n");
 	        } else {
 	            cout <<"Write miss: addr:0x"<<hex<<address;
 	            cout <<"     data:0x"<<hex<<data<<"\n";
+				// printf("\n\n\n");
 	        }
 	     }
 	    if (!(command.compare("r"))) { 
 	        if(BaseCache.read(address, &data)) {
 	            cout <<"Read Hit  : addr:0x"<<hex<<address;
 	            cout <<"     data:0x"<<hex<<data<<endl;
+				// printf("\n\n\n");
 	        } else {
 	            cout <<"Read miss : addr:0x"<<hex<<address;
 	            cout <<"     data:Unavailable"<<endl;
+				// printf("\n\n\n");
 	        }
 	    }
         }
