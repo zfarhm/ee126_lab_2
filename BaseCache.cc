@@ -117,7 +117,7 @@ void BaseCache::initDerivedParams() {
     tagBits = ADDR_BITS - indexBits - offsetBits;
     
     numWords = blockSize / wordSize;
-    printf("num words is %i\n",numWords);
+    // printf("num words is %i\n",numWords);
 
     // initialize LRU vector/matrix
     // initialize all to 0
@@ -218,6 +218,11 @@ void BaseCache::createCache() {
 //WRITE ME
 //Reset cache
 void BaseCache::clearCache() {
+    // free x axis
+    for (int j = 0; j < numSets; j++){
+        delete cacheLines[j];
+    }
+    // then free y axis
     delete[] cacheLines;
 }
 
@@ -234,42 +239,6 @@ int BaseCache::get_LRU_way(uint32_t index_bits){
     }
 
     return LRU;
-
-
-    // // given a set, return the least recently used index
-    // // just grab the first item in a specific row from the vector
-    // int LRU;
-    // for (size_t j = 0; j < LRUvector.size(); j++){
-    //     // if (!LRUvector[j].empty()){
-    //     //     printf("not empty\n");
-    //     // }else{
-    //     //     printf("empty\n");
-    //     // }
-    //     cout << "j is " << j << endl;
-    //     }
-
-    // int LRUsize = LRUvector[index_bits].size();
-    // printf("LRUsize = %i\n",LRUsize);
-    // LRU = LRUvector[index_bits].front();
-    // printf("LRU return: %i\n",LRU);
-    // return LRU;
-
-    // testing
-
-    // cout << "size is " << LRUvector.size();
-
-    // for (size_t j = 0; j < LRUvector.size(); j++){
-    //     if (LRUvector[j].empty()){
-    //         printf("size is zero");
-    //     }
-    //     // for (size_t i = 0; i < LRUvector[j].size(); i++){
-    //     //     // printf("%f ",LRUvector[j][i]);
-    //     //     cout << LRUvector[j][i];
-    //     //     // LRUvector[j,i] = 3;
-    //     // }
-    //     printf("\n");
-    // }
-    
 }
 
 
@@ -278,16 +247,12 @@ int BaseCache::LRU_miss_extract(uint32_t index_bits){
 
     // find the current LRU value
     int LRU = 0;
-    // if still empty
-    if (LRUvector[index_bits].empty()){
-        LRU = 0;
-    }else{
-        LRU = LRUvector[index_bits].front();
-    }
-        // remove first entry (LRU)
-        LRUvector[index_bits].erase(LRUvector[index_bits].begin());
-        // add to the back
-        LRUvector[index_bits].push_back(LRU);
+    LRU = LRUvector[index_bits].front();
+
+    // remove first entry (LRU)
+    LRUvector[index_bits].erase(LRUvector[index_bits].begin());
+    // add to the back (MRU)
+    LRUvector[index_bits].push_back(LRU);
 
     if(testMode){
             print_LRU_matrix();
@@ -313,36 +278,6 @@ void BaseCache::LRU_hit_move(uint32_t index_bits, int way ){
 }
 }
 
-void BaseCache::updateMRU_adding(uint32_t index_bits, int new_way){
-    // given a set
-    // if it's empty or not full, just add the position
-    // if ((LRUvector[index_bits].empty()) || LRUvector[index_bits].size() < associativity ){
-        // printf("LRU MATRIX NOT FULL:%i to MRU\n",new_way);
-        LRUvector[index_bits].push_back(new_way);
-    // if it's full, put the position in the MRU spot
-
-    // }
-
-}
-
-void BaseCache::updateLRU_static(uint32_t index_bits, int used_way){
-        // given a set
-    // if it's empty or not full, just add the position
-    // if(LRUvector[index_bits].size() == associativity){
-        // remove the first thing (LRU)
-        if (!LRUvector[index_bits].empty()){
-        LRUvector[index_bits].erase(LRUvector[index_bits].begin());
-        // add the latest MRU
-        LRUvector[index_bits].push_back(used_way);
-    }else{
-        LRUvector[index_bits].push_back(used_way);
-    }
-
-    // }
-
-
-}
-
 void BaseCache::evictBlock(uint32_t index, int way){
     cacheLines[index][way].tag = 0;
     cacheLines[index][way].valid = false;
@@ -350,18 +285,6 @@ void BaseCache::evictBlock(uint32_t index, int way){
     delete[] cacheLines[index][way].data;
     cacheLines[index][way].data = new uint32_t[numWords];
     // cacheLines[index][way].data = nullptr;
-}
-
-void BaseCache::count_valids(uint32_t index){
-    how_full = 0;
-
-    for (uint32_t j = 0; j < associativity; j++){
-        if (cacheLines[index][j].valid == true){
-            how_full++;
-        }
-    }
-
-    cout << "for index " << index << " counted " <<how_full << endl;
 }
 
 //WRITE ME
@@ -381,37 +304,27 @@ bool BaseCache::read(uint32_t addr, uint32_t *data) {
     }
 
     bool hit = false;
-    int way = 0;
     int LRU = 0;
-
-    // count_valids(index);
 
     // write to a line that is invalid or 
     for (uint32_t j = 0; j < associativity; j++){
         if ((cacheLines[index][j].tag == tag) && (cacheLines[index][j].valid == true)){
             // printf("***READ HIT***\n");
             hit = true;
-
             LRU_hit_move(index, j);
-
-            
-            memcpy(data, &cacheLines[index][way].data[offset], sizeof(uint32_t));
+            memcpy(data, &cacheLines[index][j].data[offset], sizeof(uint32_t));
             break;
         }
     }
         if (!hit){
             // printf("***READ MISS***\n");
             hit = false;
-
-            
             LRU = LRU_miss_extract(index);
-
             // because its read miss, just update tag and LRU cache line
             // do not alter data
             cacheLines[index][LRU].tag = tag;
             cacheLines[index][LRU].valid = true;
         }
-        
         numReads++;
         if (hit){
             numReadHits++;
@@ -420,7 +333,7 @@ bool BaseCache::read(uint32_t addr, uint32_t *data) {
         }
 
         if (testMode){
-    print_cache_valid();
+    // print_cache_valid();
 }
     return hit;
 
@@ -431,7 +344,6 @@ bool BaseCache::read(uint32_t addr, uint32_t *data) {
 //Function returns write hit or miss status. 
 bool BaseCache::write(uint32_t addr, uint32_t data) {
 
-
     uint32_t tag = getTag(addr);
     uint32_t index = getIndex(addr); // which set you are on
     uint32_t offset = getOffset(addr);
@@ -441,22 +353,16 @@ bool BaseCache::write(uint32_t addr, uint32_t data) {
     }
 
     bool hit = false;
-    int way = 0;
     int LRU = 0;
-
-    // count_valids(index);
 
     // write to a line that is invalid or 
     for (uint32_t j = 0; j < associativity; j++){
         if ((cacheLines[index][j].tag == tag) && (cacheLines[index][j].valid == true)){
             // printf("***WRITE HIT***\n");
             hit = true;
-
             LRU_hit_move(index, j);
-
             cacheLines[index][j].tag = tag;
             cacheLines[index][j].valid = true;
-
             memcpy(&cacheLines[index][j].data[offset], &data, sizeof(uint32_t));
             
             // make sure to update LRU
@@ -467,23 +373,17 @@ bool BaseCache::write(uint32_t addr, uint32_t data) {
         if (!hit){
             // printf("***WRITE MISS***\n");
             hit = false;
-
+            // LRU updated
             LRU = LRU_miss_extract(index);
-
             // if there is data in there, evict it
-            if (cacheLines[index][way].valid){
+            if (cacheLines[index][LRU].valid){
                 evictBlock(index,LRU);
             }
-
             // add the new data to evicted ones spot
-            // printf("add the data to position %i\n",way);
             cacheLines[index][LRU].tag = tag;
             cacheLines[index][LRU].valid = true;
-
             memcpy(&cacheLines[index][LRU].data[offset], &data, sizeof(uint32_t));
-
             // make sure to update LRU
-            // printf("update LRU\n");
         }
 
             numWrites++;
@@ -493,7 +393,7 @@ bool BaseCache::write(uint32_t addr, uint32_t data) {
             numWriteMisses++;
         }
         if (testMode){
-            print_cache_valid();
+            // print_cache_valid();
         }
     return hit;
 }
