@@ -206,21 +206,16 @@ void BaseCache::clearCache() {
 
     for (int i = 0; i < numSets; i++){
         for (uint32_t j = 0; j < associativity; j++){
-            if (cacheLines[i][j].data){
-                delete[] cacheLines[i][j].data;
-                cacheLines[i][j].data = nullptr;
-            }
+            delete[] cacheLines[i][j].data;
+            cacheLines[i][j].data = nullptr;
         }
-        if (cacheLines[i]){
-            delete[] cacheLines[i];
-            cacheLines[i] = nullptr;
-        }
+        delete[] cacheLines[i];
+        cacheLines[i] = nullptr;
     }
-
-    if (cacheLines){
+    
     delete[] cacheLines;
     cacheLines = nullptr;
-}
+
 }
 
 
