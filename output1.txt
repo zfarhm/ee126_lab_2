@@ -1,18 +1,18 @@
-Write miss: addr:0x9876abca     data:0x349823ab
-Write miss: addr:0x973234a0     data:0xaf874522
-Write miss: addr:0x345abcf0     data:0x34231209
-Read miss : addr:0x34541290     data:Unavailable
-Read Hit  : addr:0x9876abca     data:0x349823ab
-Write Hit : addr:0x9876abca     data:0x349823ac
-Read Hit  : addr:0x9876abca     data:0x349823ac
-Write Hit : addr:0x9876abce     data:0x11110000
-Write miss: addr:0x9876aaca     data:0x86764378
-Read Hit  : addr:0x9876abce     data:0x11110000
-Write miss: addr:0x9876a0ca     data:0x87687659
 
-Read Hits (HitRate): 3 (75%)
-Read Misses (MissRate): 1 (25%)
-Write Hits (HitRate): 2 (29%)
-Write Misses (MissRate): 5 (71%)
-Overall Hit Rate: 45%
-Overall Miss Rate: 55%
+L1 Read Hits (HitRate): 2 (50%)
+L1 Read Misses (MissRate): 2 (50%)
+L1 Write Hits (HitRate): 2 (29%)
+L1 Write Misses (MissRate): 5 (71%)
+L1 Overall Hit Rate: 36%
+L1 Overall Miss Rate: 64%
+
+L2 Read Hits (HitRate): 0 (0%)
+L2 Read Misses (MissRate): 2 (100%)
+L2 Write Hits (HitRate): 2 (29%)
+L2 Write Misses (MissRate): 5 (71%)
+L2 Overall Hit Rate: 22%
+L2 Overall Miss Rate: 78%
+
+Average memory access time (AMAT) (Reads): 358ns
+Minimum access time: 1ns
+Maximum access time: 716ns
