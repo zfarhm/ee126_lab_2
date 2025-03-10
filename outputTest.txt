@@ -1,0 +1,15 @@
+Write miss: addr:0x9876abca     data:0x349823ab
+Write miss: addr:0x1876abca     data:0x349823ab
+Write miss: addr:0x5876abca     data:0x349823ab
+Write miss: addr:0x7876abca     data:0x349823ab
+Read Hit  : addr:0x1876abca     data:0x349823ab
+Read miss : addr:0x6876abca     data:Unavailable
+Write Hit : addr:0x7876abca     data:0x349823ab
+Write miss: addr:0x6836abca     data:0x349823ab
+
+Read Hits (HitRate): 1 (50%)
+Read Misses (MissRate): 1 (50%)
+Write Hits (HitRate): 1 (16.6667%)
+Write Misses (MissRate): 5 (83.3333%)
+Overall Hit Rate: 25%
+Overall Miss Rate: 75%
