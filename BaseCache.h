@@ -38,8 +38,6 @@ class BaseCache{
 	int indexBits;
 	int offsetBits;
 	int tagBits;
-
-	uint32_t how_full;
 	  //WRITE ME
 
 	  //cache access statistics
@@ -62,8 +60,6 @@ class BaseCache{
 
 	void print_cache_valid();
 	void print_LRU_matrix();
-
-	void count_valids(uint32_t index);
 
     void setCacheSize(uint32_t _cacheSize); 
     void setAssociativity(uint32_t _associativity);
@@ -100,7 +96,6 @@ class BaseCache{
 	  //Reset cache
 	  void clearCache();
 
-	int get_LRU_way(uint32_t index_bits);
 	void evictBlock(uint32_t index_bits,int position);
 
 	int LRU_miss_extract(uint32_t index_bits);
