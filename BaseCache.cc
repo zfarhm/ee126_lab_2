@@ -18,7 +18,7 @@ BaseCache::BaseCache() {
 //WRITE ME
 //Constructor to initialize cache parameters, create the cache and clears it
 BaseCache::BaseCache(uint32_t _cacheSize, uint32_t _associativity, uint32_t _blockSize) {
-    testMode = true;
+    testMode = false;
     setWordSize(4);
 
     setCacheSize(_cacheSize);
@@ -317,7 +317,7 @@ bool BaseCache::read(uint32_t addr, uint32_t *data) {
             // printf("OFFSET--> %i\n",offset);
             memcpy(&(cacheLines[index][LRU].data[offset]), &data_local, sizeof(uint32_t));
             // make sure to update LRU
-            
+
         }
         numReads++;
         if (hit){
