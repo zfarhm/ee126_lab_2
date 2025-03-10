@@ -18,7 +18,7 @@ BaseCache::BaseCache() {
 //WRITE ME
 //Constructor to initialize cache parameters, create the cache and clears it
 BaseCache::BaseCache(uint32_t _cacheSize, uint32_t _associativity, uint32_t _blockSize) {
-    testMode = false;
+    testMode = true;
     setWordSize(4);
 
     setCacheSize(_cacheSize);
@@ -302,11 +302,22 @@ bool BaseCache::read(uint32_t addr, uint32_t *data) {
             // printf("***READ MISS***\n");
             hit = false;
 
+            unsigned int data_local;
+            data_local = stoul("0xff", NULL, 16);
+
             LRU = LRU_miss_extract(index);
-            // because its read miss, just update tag and LRU cache line
-            // do not alter data
+            // if there is data in there, evict it
+            if (cacheLines[index][LRU].valid){
+                // printf("EVICTION\n");
+                evictBlock(index,LRU);
+            }
+            // add the new data to evicted ones spot
             cacheLines[index][LRU].tag = tag;
             cacheLines[index][LRU].valid = true;
+            // printf("OFFSET--> %i\n",offset);
+            memcpy(&(cacheLines[index][LRU].data[offset]), &data_local, sizeof(uint32_t));
+            // make sure to update LRU
+            
         }
         numReads++;
         if (hit){
