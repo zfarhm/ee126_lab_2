@@ -10,6 +10,14 @@
 using namespace std;
 
 #define ADDR_BITS 32
+#define WORD_SIZE 4
+#define MAIN_MEMORY_SIZE 1048576
+
+// typedef struct _main_memoryLine {
+// 	uint32_t address;
+// 	uint32_t data;
+// } memoryLine;
+
 typedef struct _cacheLine {
   uint32_t tag;
   uint32_t *data; // data points to data stored in 
@@ -25,7 +33,7 @@ class BaseCache{
   	uint32_t associativity;
   	uint32_t blockSize;  //in Bytes
     cacheLine** cacheLines;
-	uint32_t wordSize; //in Bytes
+	uint32_t wordSize = WORD_SIZE; //in Bytes
 	int numWords;
 
 	vector<vector<int>> LRUvector; // empty vector to track LRU
@@ -110,6 +118,7 @@ class BaseCache{
 	  //Write data
 	  //Function returns write hit or miss status. 
 	  bool write(uint32_t addr, uint32_t data);
+	  void write_thru(uint32_t addr, uint32_t data);
 
 	  /********ADD ANY ADDITIONAL METHODS IF REQUIRED*********/	 
 	  uint32_t getTag(uint32_t addr);
@@ -119,4 +128,30 @@ class BaseCache{
 	  //Destructor to free all allocated memeroy.
 	  ~BaseCache();
 };
+
+
+// class MemoryHierarchy : public BaseCache{
+	class MemoryHierarchy{
+	public:
+
+
+		// struct memoryLine{
+		// 	uint32_t address;
+		// 	uint32_t data;
+		// }; 
+
+		// vector<memoryLine> mainMemory;
+		uint32_t mainMemory[MAIN_MEMORY_SIZE/WORD_SIZE];
+
+		MemoryHierarchy();  
+		~MemoryHierarchy();
+
+		uint32_t get_my_index(uint32_t addr);
+		uint32_t give_main_memory_data(uint32_t addr);
+		void write_main_memory_data(uint32_t addr, uint32_t data);
+
+		void read_in_memory();
+		size_t search_main_memory(uint32_t addr);
+};
+
 #endif

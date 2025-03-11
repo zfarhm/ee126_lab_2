@@ -86,3 +86,9 @@ the assignment that you have coded already.
 4. Output of your program should match exactly with sample outputs provided.
 Sample outputs are generated for above cache/mem specifications. To make sure
 your program output matches the expected output run 'diff'. 
+
+
+https://www.geeksforgeeks.org/string-find-in-cpp/
+https://www.geeksforgeeks.org/substring-in-cpp/
+
+https://stackoverflow.com/questions/589985/vectors-structs-and-stdfind

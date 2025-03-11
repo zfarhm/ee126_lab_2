@@ -7,7 +7,7 @@ using namespace std;
 //Default constructor to set everything to '0'
 BaseCache::BaseCache() {
     testMode = false;
-    setWordSize(4);
+    // setWordSize(4);
 
     setCacheSize(0);
     setAssociativity(0);
@@ -19,7 +19,7 @@ BaseCache::BaseCache() {
 //Constructor to initialize cache parameters, create the cache and clears it
 BaseCache::BaseCache(uint32_t _cacheSize, uint32_t _associativity, uint32_t _blockSize) {
     testMode = false;
-    setWordSize(4);
+    // setWordSize(4);
 
     setCacheSize(_cacheSize);
     setAssociativity(_associativity);
@@ -40,11 +40,13 @@ void BaseCache::setAssociativity(uint32_t _associativity) {
 }
 void BaseCache::setBlockSize(uint32_t _blockSize) {
     blockSize = _blockSize;
+
+    
 }
 
-void BaseCache::setWordSize(uint32_t _wordSize){
-    wordSize = _wordSize;
-}
+// void BaseCache::setWordSize(uint32_t _wordSize){
+//     wordSize = _wordSize;
+// }
 
 //WRITE ME
 //Get cache base parameters
@@ -130,9 +132,9 @@ void BaseCache::initDerivedParams() {
         }
     }
 
-    if (testMode){
+    // if (testMode){
         printf("num sets: %i, index bits: %i, offset bits: %i, tag bits: %i\n",numSets,indexBits, offsetBits, tagBits);
-    }
+    // }
 }
 
 //WRITE ME
@@ -336,6 +338,39 @@ bool BaseCache::read(uint32_t addr, uint32_t *data) {
 //WRITE ME
 //Write data
 //Function returns write hit or miss status. 
+
+void BaseCache::write_thru(uint32_t addr, uint32_t data){
+    printf("-->WRITE THRU\n");
+    uint32_t tag = getTag(addr);
+    uint32_t index = getIndex(addr); // which set you are on
+    uint32_t offset = getOffset(addr);
+
+    if (testMode){
+    cout << "TAG: " << tag << " OFFSET:" << offset << " INDEX:" << index << endl;
+    }
+
+    bool hit = false;
+    int LRU = 0;
+
+    // LRU updated
+    LRU = LRU_miss_extract(index);
+    // if there is data in there, evict it
+    if (cacheLines[index][LRU].valid){
+        // printf("EVICTION\n");
+        evictBlock(index,LRU);
+    }
+    // add the new data to evicted ones spot
+    cacheLines[index][LRU].tag = tag;
+    cacheLines[index][LRU].valid = true;
+    // printf("OFFSET--> %i\n",offset);
+    memcpy(&(cacheLines[index][LRU].data[offset]), &data, sizeof(uint32_t));
+    // make sure to update LRU
+
+}
+
+// void BaseCache::no_write_allocate()
+
+
 bool BaseCache::write(uint32_t addr, uint32_t data) {
 
     uint32_t tag = getTag(addr);
@@ -380,6 +415,8 @@ bool BaseCache::write(uint32_t addr, uint32_t data) {
             cacheLines[index][LRU].valid = true;
             // printf("OFFSET--> %i\n",offset);
             memcpy(&(cacheLines[index][LRU].data[offset]), &data, sizeof(uint32_t));
+            // cout << "WRITING: TAG: "<< cacheLines[index][LRU].tag<< " INDEX: " << index << " OFFSET: " << offset << endl;
+            // print_cache_valid();
             // make sure to update LRU
         }
 

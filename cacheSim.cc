@@ -5,25 +5,91 @@
 #include "BaseCache.h"
 using namespace std;
 
+// struct memoryLine{
+// 	uint32_t address;
+// 	uint32_t data;
+// }; 
 
-void read_in_memory(){
+MemoryHierarchy::MemoryHierarchy(){
+	printf("construct\n");
+}
+
+MemoryHierarchy::~MemoryHierarchy(){
+	printf("destruct\n");
+}
+
+void MemoryHierarchy::read_in_memory(){
 	printf("try to read in memory\n");
-	string inp_line, parsed_line;
+
+	// mainMemory = vector<memoryLine>();
+
+	string inp_line, parsed_line, address_str, data_str;
 	unsigned int address, data;
 	ifstream fp_inp("memfoot.dat");
     if(fp_inp.is_open()) {
+
         while(getline(fp_inp, inp_line)) {
             stringstream inp_string(inp_line);
-			if(getline(inp_string,parsed_line, ' ')) 
-			address = stoul(parsed_line, NULL, 16);
-			// cout << "ADDRESS " << address << endl;
-			data = stoul(parsed_line, NULL, 16);
-			// cout << "DATA " << data << endl;
+			if(getline(inp_string,parsed_line)) {
+				int index = parsed_line.find("\t");
+				address_str = parsed_line.substr(0,index);
+				// cout << "index is " << index << endl;
+				address = stoul(address_str, NULL, 16);
+				// uint32_t add_index = getIndex(address);
+				uint32_t add_index = get_my_index(address);
+				// cout << "ADDRESS " << address << endl;
+
+				address_str = parsed_line.substr(index,-1);
+				data = stoul(address_str, NULL, 16);
+				// cout << "DATA " << data << endl;
+				// cout << "ADD INDEX IS: " << add_index << endl;
+				mainMemory[add_index] = data;
+			}
+			// mainMemory.push_back({address,data});
         }
+
         fp_inp.close();
     }
 	printf("successfully read in memory\n");
+
+	// for (int i = 0; i < (MAIN_MEMORY_SIZE/WORD_SIZE); i++){
+	// 	cout << "address: " << i << " data: " << mainMemory[i] << endl;
+	// }
 }
+
+uint32_t MemoryHierarchy::get_my_index(uint32_t addr){
+	uint32_t add_index;
+	add_index = addr / WORD_SIZE;
+	return add_index;
+}
+
+uint32_t MemoryHierarchy::give_main_memory_data(uint32_t addr){
+	uint32_t add_index;
+	add_index = get_my_index(addr);
+	uint32_t memory;
+	memory = mainMemory[add_index];
+	return memory;
+}
+
+void MemoryHierarchy::write_main_memory_data(uint32_t addr, uint32_t data){
+	printf("\tUPDATING MAIN MEMORY\n");
+	uint32_t add_index;
+	add_index = get_my_index(addr);
+	mainMemory[add_index] = data;
+}
+
+// size_t MemoryHierarchy::search_main_memory(uint32_t addr, ){
+// 	// size_t index = 0;
+// 	// printf("SEARCHING MAIN MEMORY....\n");
+// 	// for (size_t i = 0; i < mainMemory.size(); i++){
+// 	// 	if (mainMemory[i].address == addr){
+// 	// 		printf("FOUND DATA IN MAIN MEMORY!\n");
+// 	// 		index = i;
+// 	// 		cout << "Address: "<< addr << " Index: " << i << endl;
+// 	// 	}
+// 	// }
+// 	// return index;
+// }
 
 
 int main(int argc, char **argv) {
@@ -48,7 +114,9 @@ int main(int argc, char **argv) {
 	// file is the last arg
 	ifstream fp_inp(argv[7]);
 
-	read_in_memory();
+	MemoryHierarchy memH;
+
+	memH.read_in_memory();
 
     if(fp_inp.is_open()) {
         while(getline(fp_inp, inp_line)) {
@@ -62,31 +130,66 @@ int main(int argc, char **argv) {
 		    data = stoul(parsed_line, NULL, 16);
 		}
 	    }
+
+		// cout << "ADDRESS IS " << address << endl;
 	   
 	    //Issue read/write command
 		// if a write
 	    if (!(command.compare("w"))) { 
-	        if(L1Cache.write(address, data)) {
-				// write hit
-				// write data and address to all levels of cache and to main memory
-	        } else {
-				// write miss
-				// no-write allocate for write misses
-				// cache NOT updated with new address and data
-				// no cache lines are evicted
-				// only main memory is updated with new data for the address
-	        }
+			if(L1Cache.write(address, data)) {
+				// write hit L1
+				printf("L1 WRITE HIT\n");
+				// need to push to L2 and main mem
+				L2Cache.write_thru(address,data);
+				memH.write_main_memory_data(address, data);
+
+			} else {
+				// L1 WRITE MISS
+
+				if (L2Cache.write(address,data)){
+					// write hit L2
+					printf("L2 WRITE HIT\n");
+					// L1Cache.write_thru(address,data);
+					memH.write_main_memory_data(address, data);
+				}else{
+					// write miss L2
+					printf("L2 WRITE MISS\n");
+					// dont update cache, just main memory
+					memH.write_main_memory_data(address, data);
+				}
+			}
 	     }
 		 // if a read
 	    if (!(command.compare("r"))) { 
-	        if(L1Cache.read(address, &data)) {
-				// read hit
-				// read hit results in no eviction/allocation
-	        } else {
-				// read miss
-				// read the new block from lower levels into LRU cache line (or empty line if avail)
-	        }
+			// check the L1 cache
+			if(L1Cache.read(address, &data)) {
+				// read hit L1
+				printf("L1 READ HIT\n");
+				// no action needed
+			} else {
+				// read miss L1
+				printf("L1 READ MISS\n");
+				// L1 
+				if (L2Cache.read(address, &data)){
+					// read hit L2
+					printf("L2 READ HIT\n");
+					L1Cache.write_thru(address,data);
+				}else{
+					// read miss L2
+					printf("L2 READ MISS\n");
+					// search main memory
+					// memH.search_main_memory(address);
+					uint32_t data = memH.give_main_memory_data(address);
+					// cout << "FOUND data is " << data << endl;
+
+					// fill in L2 and L1 now 
+					L2Cache.write_thru(address,data);
+					L1Cache.write_thru(address,data);
+				}
+
+			}
 	    }
+
         }
         fp_inp.close();
     }
