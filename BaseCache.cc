@@ -132,9 +132,9 @@ void BaseCache::initDerivedParams() {
         }
     }
 
-    // if (testMode){
+    if (testMode){
         printf("num sets: %i, index bits: %i, offset bits: %i, tag bits: %i\n",numSets,indexBits, offsetBits, tagBits);
-    // }
+    }
 }
 
 //WRITE ME
@@ -393,23 +393,23 @@ bool BaseCache::write(uint32_t addr, uint32_t data) {
     }
 
         if (!hit){
-            // printf("***WRITE MISS***\n");
-            hit = false;
-            // LRU updated
-            LRU = LRU_miss_extract(index);
-            // if there is data in there, evict it
-            if (cacheLines[index][LRU].valid){
-                // printf("EVICTION\n");
-                evictBlock(index,LRU);
-            }
-            // add the new data to evicted ones spot
-            cacheLines[index][LRU].tag = tag;
-            cacheLines[index][LRU].valid = true;
-            // printf("OFFSET--> %i\n",offset);
-            memcpy(&(cacheLines[index][LRU].data[offset]), &data, sizeof(uint32_t));
-            // cout << "WRITING: TAG: "<< cacheLines[index][LRU].tag<< " INDEX: " << index << " OFFSET: " << offset << endl;
-            // print_cache_valid();
-            // make sure to update LRU
+            // // printf("***WRITE MISS***\n");
+            // hit = false;
+            // // LRU updated
+            // LRU = LRU_miss_extract(index);
+            // // if there is data in there, evict it
+            // if (cacheLines[index][LRU].valid){
+            //     // printf("EVICTION\n");
+            //     evictBlock(index,LRU);
+            // }
+            // // add the new data to evicted ones spot
+            // cacheLines[index][LRU].tag = tag;
+            // cacheLines[index][LRU].valid = true;
+            // // printf("OFFSET--> %i\n",offset);
+            // memcpy(&(cacheLines[index][LRU].data[offset]), &data, sizeof(uint32_t));
+            // // cout << "WRITING: TAG: "<< cacheLines[index][LRU].tag<< " INDEX: " << index << " OFFSET: " << offset << endl;
+            // // print_cache_valid();
+            // // make sure to update LRU
         }
 
             numWrites++;

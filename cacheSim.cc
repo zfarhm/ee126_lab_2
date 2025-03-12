@@ -11,15 +11,15 @@ using namespace std;
 // }; 
 
 MemoryHierarchy::MemoryHierarchy(){
-	printf("construct\n");
+	// printf("construct\n");
 }
 
 MemoryHierarchy::~MemoryHierarchy(){
-	printf("destruct\n");
+	// printf("destruct\n");
 }
 
 void MemoryHierarchy::read_in_memory(){
-	printf("try to read in memory\n");
+	// printf("try to read in memory\n");
 
 	// mainMemory = vector<memoryLine>();
 
@@ -50,7 +50,7 @@ void MemoryHierarchy::read_in_memory(){
 
         fp_inp.close();
     }
-	printf("successfully read in memory\n");
+	// printf("successfully read in memory\n");
 
 	// for (int i = 0; i < (MAIN_MEMORY_SIZE/WORD_SIZE); i++){
 	// 	cout << "address: " << i << " data: " << mainMemory[i] << endl;
@@ -140,7 +140,6 @@ int main(int argc, char **argv) {
 				// need to push to L2 and main mem
 				L2Cache.write(address,data);
 				memH.write_to_main_memory(address, data);
-
 				total_time = total_time + L1_time + L2_time + mem_time;
 
 			} else {
@@ -215,7 +214,7 @@ int main(int argc, char **argv) {
     cout << "L2 Write Misses (MissRate): "<<L2Cache.getWriteMisses() <<" ("<<L2Cache.getWriteMissRate()<<"%)"<<endl;
     cout << "L2 Overall Hit Rate: "<<L2Cache.getOverallHitRate() <<"%" << endl;
     cout << "L2 Overall Miss Rate: "<<L2Cache.getOverallMissRate()<<"%"<<endl;
-	printf("Average memory access time (AMAT) (Reads): %i\n",read_time);
+	printf("Average memory access time (AMAT) (Reads): %ins\n",read_time);
 
 	// memory timing stats
 
