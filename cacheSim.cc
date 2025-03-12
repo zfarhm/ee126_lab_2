@@ -68,6 +68,7 @@ uint32_t MemoryHierarchy::find_in_main_memory(uint32_t addr){
 	add_index = get_my_index(addr);
 	uint32_t memory;
 	memory = mainMemory[add_index];
+	numMain++;
 	return memory;
 }
 
@@ -76,20 +77,15 @@ void MemoryHierarchy::write_to_main_memory(uint32_t addr, uint32_t data){
 	uint32_t add_index;
 	add_index = get_my_index(addr);
 	mainMemory[add_index] = data;
+	// numMain++;
+}
+
+int MemoryHierarchy::get_mainMem_hits(){
+	return numMain;
 }
 
 
 int main(int argc, char **argv) {
-
-	int minimum_time = 0;
-	int maximum_time = 0;
-	int total_time = 0;
-	int read_time = 0;
-
-	int L1_time = 1;
-	int L2_time = 15;
-	int mem_time = 700;
-
 
     string inp_line, parsed_line;
     string command;
@@ -140,7 +136,6 @@ int main(int argc, char **argv) {
 				// need to push to L2 and main mem
 				L2Cache.write(address,data);
 				memH.write_to_main_memory(address, data);
-				total_time = total_time + L1_time + L2_time + mem_time;
 
 			} else {
 				if (L2Cache.write(address,data)){
@@ -148,7 +143,6 @@ int main(int argc, char **argv) {
 					cout <<"L2 write hit at 0x"<<hex<<address<<"\tData: 0x" <<hex<< data<<"\n";
 					// L1Cache.write(address,data);
 					memH.write_to_main_memory(address, data);
-					total_time = total_time + L1_time + L2_time + mem_time;
 				}else{
 					// write miss L2
 					cout <<"L1 and L2 write miss at 0x"<<hex<<address<<"\tData: 0x" <<hex<< data<<"\n";
@@ -156,7 +150,6 @@ int main(int argc, char **argv) {
 					// dont update cache, just main memory
 					// L2Cache.write_thru(address,data);
 					memH.write_to_main_memory(address, data);
-					total_time = total_time + L1_time + L2_time + mem_time;
 				}
 			}
 	     }
@@ -166,8 +159,6 @@ int main(int argc, char **argv) {
 			if(L1Cache.read(address, &data)) {
 				// read hit L1
 				cout <<"L1 read hit at 0x"<<hex<<address<<"\tData: 0x" <<hex<< data<<"\n";
-				total_time = total_time + L1_time;
-				read_time = read_time + L1_time;
 
 				// no action needed
 			} else {
@@ -175,19 +166,14 @@ int main(int argc, char **argv) {
 					// read hit L2
 					cout <<"L2 read hit at 0x"<<hex<<address<<"\tData: 0x" <<hex<< data<<"\n";
 					L1Cache.write_thru_miss(address,data);
-					total_time = total_time + L1_time + L2_time;
-					read_time = read_time + L1_time + L2_time;
 				}else{
 					// read miss L2
-					cout <<"L1 and L2 read miss at 0x"<<hex<<address<<"\tData: 0x" <<hex<< data<<"\n";
 					// search main memory for the data
 					uint32_t data = memH.find_in_main_memory(address);
 					// fill in L2 and L1 now 
 					L2Cache.write_thru_miss(address,data);
 					L1Cache.write_thru_miss(address,data);
-
-					total_time = total_time + L1_time + L2_time + mem_time;
-					read_time = read_time + L1_time + L2_time + mem_time;
+					cout <<"L1 and L2 read miss at 0x"<<hex<<address<<"\tData: 0x" <<hex<< data<<"\n";
 				}
 
 			}
@@ -214,9 +200,22 @@ int main(int argc, char **argv) {
     cout << "L2 Write Misses (MissRate): "<<L2Cache.getWriteMisses() <<" ("<<L2Cache.getWriteMissRate()<<"%)"<<endl;
     cout << "L2 Overall Hit Rate: "<<L2Cache.getOverallHitRate() <<"%" << endl;
     cout << "L2 Overall Miss Rate: "<<L2Cache.getOverallMissRate()<<"%"<<endl;
-	printf("Average memory access time (AMAT) (Reads): %ins\n",read_time);
+
+	double L1_time = 1;
+	double L2_time = 15;
+	double mem_time = 700;
+
+	double L1total = ((L1Cache.getReadHits()+L1Cache.getReadMisses()) * L1_time);
+	double L2total = ((L2Cache.getReadHits()+L2Cache.getReadMisses()) * L2_time);
+	double memTotal = ((memH.get_mainMem_hits()) * mem_time);
+
+	double AMAT = L1total + L2total + memTotal;
+
+	printf("Average memory access time (AMAT) (Reads): %.fs\n",AMAT);
 
 	// memory timing stats
-
+	int min = 0;
+	int max = 0;
+	
     return 1;
 }

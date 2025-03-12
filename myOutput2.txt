@@ -1,0 +1,23 @@
+L1 and L2 write miss at 0x43200 Data: 0x12349876
+L1 and L2 write miss at 0x32980 Data: 0x98763452
+L1 and L2 write miss at 0x9840  Data: 0x34980120
+L1 and L2 read miss at 0x43204  Data: 0xc5bdf
+L1 read hit at 0x43200  Data: 0x0
+L1 and L2 read miss at 0x32988  Data: 0xa4cc8
+L1 write hit at 0x43204 Data: 0x98987676
+L1 and L2 write miss at 0x54040 Data: 0x436abcef
+
+L1 Read Hits (HitRate): 1 (33%)
+L1 Read Misses (MissRate): 2 (66%)
+L1 Write Hits (HitRate): 1 (20%)
+L1 Write Misses (MissRate): 4 (80%)
+L1 Overall Hit Rate: 25%
+L1 Overall Miss Rate: 75%
+
+L2 Read Hits (HitRate): 0 (0%)
+L2 Read Misses (MissRate): 2 (100%)
+L2 Write Hits (HitRate): 1 (20%)
+L2 Write Misses (MissRate): 4 (80%)
+L2 Overall Hit Rate: 14%
+L2 Overall Miss Rate: 85%
+Average memory access time (AMAT) (Reads): 1433ns

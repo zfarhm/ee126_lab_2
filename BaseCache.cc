@@ -78,34 +78,46 @@ double BaseCache::getWriteMisses() {
 double BaseCache::getReadHitRate() {
     double result;
     result = (numReadHits / numReads)*100;
-    return result;
+    int return_this;
+    return_this = (int)result;
+    return return_this;
 }
 double BaseCache::getReadMissRate() {
     double result = 0;
     result = (numReadMisses / numReads)*100;
-    return result;
+    int return_this;
+    return_this = (int)result;
+    return return_this;
 }
 
 double BaseCache::getWriteHitRate() {
     double result = 0;
     result = (numWriteHits / numWrites)*100;
-    return result;
+    int return_this;
+    return_this = (int)result;
+    return return_this;
 }
 double BaseCache::getWriteMissRate() {
     double result = 0;
     result = (numWriteMisses / numWrites)*100;
-    return result;
+    int return_this;
+    return_this = (int)result;
+    return return_this;
 }
 
 double BaseCache::getOverallHitRate() {
     double result = 0;
     result = ((numReadHits + numWriteHits) / (numWrites + numReads))*100;
-    return result;
+    int return_this;
+    return_this = (int)result;
+    return return_this;
 }
 double BaseCache::getOverallMissRate() {
     double result = 0;
     result = ((numReadMisses + numWriteMisses) / (numWrites + numReads))*100;
-    return result;
+    int return_this;
+    return_this = (int)result;
+    return return_this;
 }
 
 //WRITE ME
