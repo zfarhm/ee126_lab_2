@@ -5,8 +5,7 @@ part of the assignment you will implement following new features:
     1) Memory hierarchy (Two cache levels: L1 and L2, and a main memory)
     2) Cache timing statistics 
     3) Eviction policy for read misses and writes (write-through)
-		Write-through - when writing new data to cache, all lower levels of the cache (and main memory) get updated with the same address and same data. This ensures consistency throughout all levels of cache and main memory
-    4) No-Write Allocate policy for write misses - on a write miss, the cache is NOT updated with the new address and data. No cache lines are evicted. Only main memory is updated with the new data for the specified addre
+    4) No-Write Allocate policy for write misses
     
 Following are the default parameters of the memory system:
 
@@ -86,9 +85,3 @@ the assignment that you have coded already.
 4. Output of your program should match exactly with sample outputs provided.
 Sample outputs are generated for above cache/mem specifications. To make sure
 your program output matches the expected output run 'diff'. 
-
-
-https://www.geeksforgeeks.org/string-find-in-cpp/
-https://www.geeksforgeeks.org/substring-in-cpp/
-
-https://stackoverflow.com/questions/589985/vectors-structs-and-stdfind

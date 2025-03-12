@@ -109,7 +109,6 @@ class BaseCache{
 	int LRU_miss_extract(uint32_t index_bits);
 	void LRU_hit_move(uint32_t index_bits, int way);
 
-
 	  //Read data
 	  //return true if it was a hit, false if it was a miss
 	  //data is only valid if it was a hit, input data pointer
@@ -118,7 +117,8 @@ class BaseCache{
 	  //Write data
 	  //Function returns write hit or miss status. 
 	  bool write(uint32_t addr, uint32_t data);
-	  void write_thru(uint32_t addr, uint32_t data);
+
+	  void write_thru_miss(uint32_t addr, uint32_t data);
 
 	  /********ADD ANY ADDITIONAL METHODS IF REQUIRED*********/	 
 	  uint32_t getTag(uint32_t addr);
@@ -141,17 +141,17 @@ class BaseCache{
 		// }; 
 
 		// vector<memoryLine> mainMemory;
+
 		uint32_t mainMemory[MAIN_MEMORY_SIZE/WORD_SIZE];
 
 		MemoryHierarchy();  
 		~MemoryHierarchy();
 
 		uint32_t get_my_index(uint32_t addr);
-		uint32_t give_main_memory_data(uint32_t addr);
-		void write_main_memory_data(uint32_t addr, uint32_t data);
+		uint32_t find_in_main_memory(uint32_t addr);
+		void write_to_main_memory(uint32_t addr, uint32_t data);
 
 		void read_in_memory();
-		size_t search_main_memory(uint32_t addr);
 };
 
 #endif

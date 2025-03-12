@@ -286,7 +286,7 @@ bool BaseCache::read(uint32_t addr, uint32_t *data) {
     }
 
     bool hit = false;
-    int LRU = 0;
+    // int LRU = 0;
 
     // write to a line that is invalid or 
     for (uint32_t j = 0; j < associativity; j++){
@@ -300,27 +300,27 @@ bool BaseCache::read(uint32_t addr, uint32_t *data) {
             break;
         }
     }
-        if (!hit){
-            // printf("***READ MISS***\n");
-            hit = false;
+        // if (!hit){
+        //     printf("***READ MISS***\n");
+        //     hit = false;
 
-            unsigned int data_local;
-            data_local = stoul("0xff", NULL, 16);
+        //     unsigned int data_local;
+        //     data_local = stoul("0xff", NULL, 16);
 
-            LRU = LRU_miss_extract(index);
-            // if there is data in there, evict it
-            if (cacheLines[index][LRU].valid){
-                // printf("EVICTION\n");
-                evictBlock(index,LRU);
-            }
-            // add the new data to evicted ones spot
-            cacheLines[index][LRU].tag = tag;
-            cacheLines[index][LRU].valid = true;
-            // printf("OFFSET--> %i\n",offset);
-            memcpy(&(cacheLines[index][LRU].data[offset]), &data_local, sizeof(uint32_t));
-            // make sure to update LRU
+        //     LRU = LRU_miss_extract(index);
+        //     // if there is data in there, evict it
+        //     if (cacheLines[index][LRU].valid){
+        //         // printf("EVICTION\n");
+        //         evictBlock(index,LRU);
+        //     }
+        //     // add the new data to evicted ones spot
+        //     cacheLines[index][LRU].tag = tag;
+        //     cacheLines[index][LRU].valid = true;
+        //     // printf("OFFSET--> %i\n",offset);
+        //     memcpy(&(cacheLines[index][LRU].data[offset]), &data_local, sizeof(uint32_t));
+        //     // make sure to update LRU
 
-        }
+        // }
         numReads++;
         if (hit){
             numReadHits++;
@@ -330,7 +330,7 @@ bool BaseCache::read(uint32_t addr, uint32_t *data) {
 
         if (testMode){
     // print_cache_valid();
-}
+    }
     return hit;
 
 }
@@ -339,17 +339,11 @@ bool BaseCache::read(uint32_t addr, uint32_t *data) {
 //Write data
 //Function returns write hit or miss status. 
 
-void BaseCache::write_thru(uint32_t addr, uint32_t data){
-    printf("-->WRITE THRU\n");
+void BaseCache::write_thru_miss(uint32_t addr, uint32_t data){
     uint32_t tag = getTag(addr);
     uint32_t index = getIndex(addr); // which set you are on
     uint32_t offset = getOffset(addr);
 
-    if (testMode){
-    cout << "TAG: " << tag << " OFFSET:" << offset << " INDEX:" << index << endl;
-    }
-
-    bool hit = false;
     int LRU = 0;
 
     // LRU updated
@@ -367,8 +361,6 @@ void BaseCache::write_thru(uint32_t addr, uint32_t data){
     // make sure to update LRU
 
 }
-
-// void BaseCache::no_write_allocate()
 
 
 bool BaseCache::write(uint32_t addr, uint32_t data) {
