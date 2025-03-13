@@ -19,10 +19,10 @@ L1 Overall Miss Rate: 64%
 
 L2 Read Hits (HitRate): 0 (0%)
 L2 Read Misses (MissRate): 2 (100%)
-L2 Write Hits (HitRate): 0 (0%)
-L2 Write Misses (MissRate): 5 (100%)
-L2 Overall Hit Rate: 0%
-L2 Overall Miss Rate: 100%
+L2 Write Hits (HitRate): 2 (29%)
+L2 Write Misses (MissRate): 5 (71%)
+L2 Overall Hit Rate: 22%
+L2 Overall Miss Rate: 78%
 
 Average memory access time (AMAT) (Reads): 358ns
 Minimum access time: 1ns

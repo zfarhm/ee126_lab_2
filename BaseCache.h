@@ -78,6 +78,7 @@ class BaseCache{
 	  uint32_t getCacheSize(); 
     uint32_t getAssociativity(); 
     uint32_t getBlockSize(); 
+	uint32_t getNumWords();
 	
 	  //Get cache access statistics
 	  double getReadHits(); 
@@ -118,7 +119,7 @@ class BaseCache{
 	  //Function returns write hit or miss status. 
 	  bool write(uint32_t addr, uint32_t data);
 
-	  void write_thru_miss(uint32_t addr, uint32_t data);
+	  void write_thru_miss(uint32_t addr, uint32_t *data_block);
 
 	  /********ADD ANY ADDITIONAL METHODS IF REQUIRED*********/	 
 	  uint32_t getTag(uint32_t addr);
@@ -147,14 +148,16 @@ class BaseCache{
 
 		// vector<memoryLine> mainMemory;
 
-		uint32_t mainMemory[MAIN_MEMORY_SIZE/WORD_SIZE];
+		// uint32_t mainMemory[MAIN_MEMORY_SIZE/WORD_SIZE];
+		uint32_t* mainMemory;
 
 		MemoryHierarchy();  
 		~MemoryHierarchy();
 
 		uint32_t get_my_index(uint32_t addr);
-		uint32_t find_in_main_memory(uint32_t addr);
-		void write_to_main_memory(uint32_t addr, uint32_t data);
+
+		uint32_t* find_in_main_memory_block(uint32_t addr,uint32_t blockSize);
+		void write_to_main_memory_word(uint32_t addr, uint32_t data);
 
 		void read_in_memory();
 };

@@ -60,6 +60,10 @@ uint32_t BaseCache::getBlockSize() {
     return blockSize;
 }
 
+uint32_t BaseCache::getNumWords(){
+    return numWords;
+}
+
 //WRITE ME
 //Get cache access statistics
 double BaseCache::getReadHits() {
@@ -351,10 +355,9 @@ bool BaseCache::read(uint32_t addr, uint32_t *data) {
 //Write data
 //Function returns write hit or miss status. 
 
-void BaseCache::write_thru_miss(uint32_t addr, uint32_t data){
+void BaseCache::write_thru_miss(uint32_t addr, uint32_t* data_block){
     uint32_t tag = getTag(addr);
     uint32_t index = getIndex(addr); // which set you are on
-    uint32_t offset = getOffset(addr);
 
     int LRU = 0;
 
@@ -369,7 +372,9 @@ void BaseCache::write_thru_miss(uint32_t addr, uint32_t data){
     cacheLines[index][LRU].tag = tag;
     cacheLines[index][LRU].valid = true;
     // printf("OFFSET--> %i\n",offset);
-    memcpy(&(cacheLines[index][LRU].data[offset]), &data, sizeof(uint32_t));
+    // cacheLines[index][LRU].data = data_block;
+    // memcpy((cacheLines[index][LRU].data), data_block, blockSize);
+    // printf("### WRITE THRU WORKED ###");
     // make sure to update LRU
 
 }

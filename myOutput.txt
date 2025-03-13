@@ -1,8 +1,8 @@
 L1 and L2 write miss at 0x6abca Data: 0x349823ab
 L1 and L2 write miss at 0x234a0 Data: 0xaf874522
 L1 and L2 write miss at 0xabcf0 Data: 0x34231209
-L1 and L2 read miss at 0x41290  Data: 0xfffcb2dd
-L1 and L2 read miss at 0x6abca  Data: 0x349823ab
+L1 and L2 read miss at 0x41290  Data: 0x34231209
+L1 and L2 read miss at 0x6abca  Data: 0x34231209
 L1 write hit at 0x6abca Data: 0x349823ac
 L1 read hit at 0x6abca  Data: 0x349823ac
 L1 write hit at 0x6abce Data: 0x11110000
@@ -23,4 +23,4 @@ L2 Write Hits (HitRate): 2 (28%)
 L2 Write Misses (MissRate): 5 (71%)
 L2 Overall Hit Rate: 22%
 L2 Overall Miss Rate: 77%
-Average memory access time (AMAT) (Reads): 1434ns
+Average memory access time (AMAT) (Reads): 1434
