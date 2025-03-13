@@ -110,6 +110,7 @@ class BaseCache{
 	int LRU_miss_extract(uint32_t index_bits);
 	void LRU_hit_move(uint32_t index_bits, int way);
 
+	uint32_t* find_data_block(uint32_t addr);
 	  //Read data
 	  //return true if it was a hit, false if it was a miss
 	  //data is only valid if it was a hit, input data pointer

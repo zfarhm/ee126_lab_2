@@ -2,8 +2,11 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <cmath>
 #include "BaseCache.h"
 using namespace std;
+
+
 
 // struct memoryLine{
 // 	uint32_t address;
@@ -180,7 +183,9 @@ int main(int argc, char **argv) {
 				if (L2Cache.read(address, &data)){
 					// read hit L2
 					cout <<"L2 read hit at 0x"<<hex<<address<<"\tData: 0x" <<hex<< data<<"\n";
-					uint32_t *data_block = memH.find_in_main_memory_block(address,L1Cache.getBlockSize());
+
+					// uint32_t *data_block = memH.find_in_main_memory_block(address,L1Cache.getBlockSize());
+					uint32_t *data_block = L2Cache.find_data_block(address);
 					L1Cache.write_thru_miss(address,data_block);
 					
 				}else{
@@ -189,8 +194,8 @@ int main(int argc, char **argv) {
 					L2Cache.write_thru_miss(address,data_block);
 
 					// find in main memoroy based on L1 block size
-					// uint32_t *data_block1 = memH.find_in_main_memory_block(address,L1Cache.getBlockSize());
-					L1Cache.write_thru_miss(address,data_block);
+					uint32_t *data_block1 = memH.find_in_main_memory_block(address,L1Cache.getBlockSize());
+					L1Cache.write_thru_miss(address,data_block1);
 
 					cout <<"L1 and L2 read miss at 0x"<<hex<<address<<"\tData: 0x" <<hex<< data<<"\n";
 				}
@@ -224,19 +229,31 @@ int main(int argc, char **argv) {
 	double L2_time = 15;
 	double mem_time = 700;
 
-	double L1total = ((L1Cache.getReadHits()+L1Cache.getReadMisses()) * L1_time);
-	double L2total = ((L2Cache.getReadHits()+L2Cache.getReadMisses()) * L2_time);
-	double memTotal = ((memH.get_mainMem_hits()) * mem_time);
+	double AMAT = 0;
+	int AMAT1 = 0;
 
-	double AMAT = L1total + L2total + memTotal;
+	double miss_rate_L1 = 0;
+	double miss_rate_L2 = 0;
 
-	cout << "Average memory access time (AMAT) (Reads): " << AMAT << endl;
 
-	// printf("Average memory access time (AMAT) (Reads): %.fs\n",AMAT);
+	double L1_total_hits = L1Cache.getReadMisses() + L1Cache.getReadHits() + L1Cache.getWriteMisses() + L1Cache.getWriteHits();
+	double L2_total_hits = L2Cache.getReadMisses() + L2Cache.getReadHits() + L2Cache.getWriteMisses() + L2Cache.getWriteHits();
 
-	// memory timing stats
-	int min = 0;
-	int max = 0;
-	
+	if (!(L1_total_hits == 0)){
+		miss_rate_L1 = ( (double) (L1Cache.getReadMisses() + L1Cache.getWriteMisses()) / (L1_total_hits) );
+	}
+
+	if (!(L2_total_hits == 0 )){
+		miss_rate_L2 = ( (double) (L2Cache.getReadMisses() + L2Cache.getWriteMisses()) / (L2_total_hits) );
+	}
+
+	if (!((round(miss_rate_L1) == 0) && (round(miss_rate_L2) == 0))){
+		AMAT = L1_time + (miss_rate_L1 * L2_time) + (miss_rate_L1 * miss_rate_L2 * mem_time);
+		AMAT1 = ceil(AMAT);
+	}
+
+
+	printf("\nAverage memory access time (AMAT) (Reads): %ins\n",AMAT1);
+
     return 1;
 }

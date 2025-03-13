@@ -80,48 +80,54 @@ double BaseCache::getWriteMisses() {
 }
 
 double BaseCache::getReadHitRate() {
-    double result;
-    result = (numReadHits / numReads)*100;
-    int return_this;
-    return_this = (int)result;
-    return return_this;
+    if (numReads == 0){
+        int zero = 0;
+        return zero;
+    }
+    int result = round((numReadHits / numReads)*100);
+    return result;
 }
 double BaseCache::getReadMissRate() {
-    double result = 0;
-    result = (numReadMisses / numReads)*100;
-    int return_this;
-    return_this = (int)result;
-    return return_this;
+    if (numReads == 0){
+        int zero = 0;
+        return zero;
+    }
+    int result = round((numReadMisses / numReads)*100);
+    return result;
 }
 
 double BaseCache::getWriteHitRate() {
-    double result = 0;
-    result = (numWriteHits / numWrites)*100;
-    int return_this;
-    return_this = (int)result;
-    return return_this;
+    if (numWrites == 0){
+        int zero = 0;
+        return zero;
+    }
+    int result = round((numWriteHits / numWrites)*100);
+    return result;
 }
 double BaseCache::getWriteMissRate() {
-    double result = 0;
-    result = (numWriteMisses / numWrites)*100;
-    int return_this;
-    return_this = (int)result;
-    return return_this;
+    if (numWrites == 0){
+        int zero = 0;
+        return zero;
+    }
+    int result = round((numWriteMisses / numWrites)*100);
+    return result;
 }
 
 double BaseCache::getOverallHitRate() {
-    double result = 0;
-    result = ((numReadHits + numWriteHits) / (numWrites + numReads))*100;
-    int return_this;
-    return_this = (int)result;
-    return return_this;
+    if ((numWrites + numReads == 0)){
+        int zero = 0;
+        return zero;
+    }
+    int result = round(((numReadHits + numWriteHits) / (numWrites + numReads))*100);
+    return result;
 }
 double BaseCache::getOverallMissRate() {
-    double result = 0;
-    result = ((numReadMisses + numWriteMisses) / (numWrites + numReads))*100;
-    int return_this;
-    return_this = (int)result;
-    return return_this;
+    if ((numWrites + numReads == 0)){
+        int zero = 0;
+        return zero;
+    }
+    int result = round(((numReadMisses + numWriteMisses) / (numWrites + numReads))*100);
+    return result;
 }
 
 //WRITE ME
@@ -283,6 +289,23 @@ void BaseCache::evictBlock(uint32_t index, int way){
     // printf("num words is %i\n",numWords);
 
     // cacheLines[index][way].data = nullptr;
+}
+
+uint32_t* BaseCache::find_data_block(uint32_t addr){
+
+    uint32_t tag = getTag(addr);
+    uint32_t index = getIndex(addr); // which set you are on
+    // uint32_t offset = getOffset(addr);
+
+    for (uint32_t j = 0; j < associativity; j++){
+        if ((cacheLines[index][j].tag == tag) && (cacheLines[index][j].valid == true)){
+            LRU_hit_move(index, j);
+            return cacheLines[index][j].data;
+        }
+    }
+
+    return nullptr;
+
 }
 
 //WRITE ME
