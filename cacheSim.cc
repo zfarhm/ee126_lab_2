@@ -172,6 +172,7 @@ int main(int argc, char **argv) {
 				}
 			}
 	     }
+		 
 		 // if a read
 	    if (!(command.compare("r"))) { 
 			// check the L1 cache
