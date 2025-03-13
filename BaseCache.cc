@@ -239,7 +239,6 @@ void BaseCache::clearCache() {
 
 }
 
-
 int BaseCache::LRU_miss_extract(uint32_t index_bits){
     // gets the value and moves it to the back
 
@@ -287,7 +286,6 @@ void BaseCache::evictBlock(uint32_t index, int way){
         cacheLines[index][way].data = new uint32_t[numWords]();
     }
     // printf("num words is %i\n",numWords);
-
     // cacheLines[index][way].data = nullptr;
 }
 
@@ -369,7 +367,7 @@ bool BaseCache::read(uint32_t addr, uint32_t *data) {
 
         if (testMode){
     // print_cache_valid();
-    }
+        }
     return hit;
 
 }
@@ -414,7 +412,6 @@ bool BaseCache::write(uint32_t addr, uint32_t data) {
     }
 
     bool hit = false;
-    int LRU = 0;
 
     // write to a line that is invalid or 
     for (uint32_t j = 0; j < associativity; j++){

@@ -138,6 +138,14 @@ int main(int argc, char **argv) {
     string command;
     unsigned int address, data;
 
+	double L1_time = 1;
+	double L2_time = 15;
+	double mem_time = 700;
+
+	double min_time = 1000;
+	double max_time = 0;
+	double time = 0;
+
 	// initialize L1 cache
     uint32_t cacheSize1, associativity1, blockSize1;
     cacheSize1 = atoi(argv[1]);
@@ -184,6 +192,7 @@ int main(int argc, char **argv) {
 				// need to push to L2 and main mem
 				L2Cache.write(address,data);
 				memH.write_to_main_memory_word(address, data);
+				time = L1_time;
 
 			} else {
 				if (L2Cache.write(address,data)){
@@ -191,6 +200,7 @@ int main(int argc, char **argv) {
 					cout <<"L2 write hit at 0x"<<hex<<address<<"\tData: 0x" <<hex<< data<<"\n";
 					// L1Cache.write(address,data);
 					memH.write_to_main_memory_word(address, data);
+					time = L1_time + L2_time;
 				}else{
 					// write miss L2
 					cout <<"L1 and L2 write miss at 0x"<<hex<<address<<"\tData: 0x" <<hex<< data<<"\n";
@@ -198,6 +208,7 @@ int main(int argc, char **argv) {
 					// dont update cache, just main memory
 					// L2Cache.write_thru(address,data);
 					memH.write_to_main_memory_word(address, data);
+					time = L1_time + L2_time + mem_time;
 				}
 			}
 	     }
@@ -209,6 +220,7 @@ int main(int argc, char **argv) {
 				// read hit L1
 				uint32_t show = memH.find_in_main_memory_word(address);
 				cout <<"L1 read hit at 0x"<<hex<<address<<"\tData: 0x" <<hex<< show<<"\n";
+				time = L1_time;
 				// no action needed
 			} else {
 				if (L2Cache.read(address, &data)){
@@ -219,6 +231,7 @@ int main(int argc, char **argv) {
 					// uint32_t *data_block = memH.find_in_main_memory_block(address,L1Cache.getBlockSize());
 					uint32_t *data_block = L2Cache.find_data_block(address);
 					L1Cache.write_thru_miss(address,data_block);
+					time = L2_time + L1_time;
 					
 				}else{
 					// find in main memory based on L2 block size
@@ -230,15 +243,26 @@ int main(int argc, char **argv) {
 					L1Cache.write_thru_miss(address,data_block1);
 					
 					uint32_t show = memH.find_in_main_memory_word(address);
+					time = mem_time + L2_time + L1_time;
 					cout <<"L1 and L2 read miss at 0x"<<hex<<address<<"\tData: 0x" <<hex<< show<<"\n";
 				}
 
 			}
 	    }
+		if (time < min_time){
+			min_time = time;
+		}
+	
+		if (time > max_time){
+			max_time = time;
+		}
+	
 
         }
         fp_inp.close();
     }
+
+
 
 	// L1
     cout <<endl;
@@ -258,12 +282,11 @@ int main(int argc, char **argv) {
     cout << "L2 Overall Hit Rate: "<<L2Cache.getOverallHitRate() <<"%" << endl;
     cout << "L2 Overall Miss Rate: "<<L2Cache.getOverallMissRate()<<"%"<<endl;
 
-	double L1_time = 1;
-	double L2_time = 15;
-	double mem_time = 700;
-
 	double AMAT = 0;
 	int AMAT1 = 0;
+
+	int min_time1 = 0;
+	int max_time1 = 0;
 
 	double miss_rate_L1 = 0;
 	double miss_rate_L2 = 0;
@@ -272,21 +295,28 @@ int main(int argc, char **argv) {
 	double L1_total_hits = L1Cache.getReadMisses() + L1Cache.getReadHits() + L1Cache.getWriteMisses() + L1Cache.getWriteHits();
 	double L2_total_hits = L2Cache.getReadMisses() + L2Cache.getReadHits() + L2Cache.getWriteMisses() + L2Cache.getWriteHits();
 
+	double L1_misses = L1Cache.getReadMisses() + L1Cache.getWriteMisses();
+	double L2_misses = L2Cache.getReadMisses() + L2Cache.getWriteMisses();
+
 	if (!(L1_total_hits == 0)){
-		miss_rate_L1 = ( (double) (L1Cache.getReadMisses() + L1Cache.getWriteMisses()) / (L1_total_hits) );
+		miss_rate_L1 = ( L1_misses / L1_total_hits );
 	}
 
 	if (!(L2_total_hits == 0 )){
-		miss_rate_L2 = ( (double) (L2Cache.getReadMisses() + L2Cache.getWriteMisses()) / (L2_total_hits) );
+		miss_rate_L2 = ( L2_misses / L2_total_hits );
 	}
 
 	if (!((round(miss_rate_L1) == 0) && (round(miss_rate_L2) == 0))){
 		AMAT = L1_time + (miss_rate_L1 * L2_time) + (miss_rate_L1 * miss_rate_L2 * mem_time);
 		AMAT1 = ceil(AMAT);
 	}
-
+	
+	min_time1 = round(min_time);
+	max_time1 = round(max_time);
 
 	printf("\nAverage memory access time (AMAT) (Reads): %ins\n",AMAT1);
+	printf("Minimum access time: %ins\n",min_time1);
+	printf("Maximum access time: %ins\n",max_time1);
 
     return 1;
 }
