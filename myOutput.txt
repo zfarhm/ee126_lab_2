@@ -1,8 +1,8 @@
 L1 and L2 write miss at 0x6abca Data: 0x349823ab
 L1 and L2 write miss at 0x234a0 Data: 0xaf874522
 L1 and L2 write miss at 0xabcf0 Data: 0x34231209
-L1 and L2 read miss at 0x41290  Data: 0x34231209
-L1 and L2 read miss at 0x6abca  Data: 0x34231209
+L1 and L2 read miss at 0x41290  Data: 0xfffcb2dd
+L1 and L2 read miss at 0x6abca  Data: 0x349823ab
 L1 write hit at 0x6abca Data: 0x349823ac
 L1 read hit at 0x6abca  Data: 0x349823ac
 L1 write hit at 0x6abce Data: 0x11110000

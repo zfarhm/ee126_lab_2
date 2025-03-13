@@ -158,6 +158,7 @@ class BaseCache{
 		uint32_t get_my_index(uint32_t addr);
 
 		uint32_t* find_in_main_memory_block(uint32_t addr,uint32_t blockSize);
+		uint32_t find_in_main_memory_word(uint32_t addr);
 		void write_to_main_memory_word(uint32_t addr, uint32_t data);
 
 		void read_in_memory();

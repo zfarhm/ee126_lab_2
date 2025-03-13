@@ -47,7 +47,7 @@ void MemoryHierarchy::read_in_memory(){
 
 				address_str = parsed_line.substr(index,-1);
 				data = stoul(address_str, NULL, 16);
-				// cout << "DATA " << data << endl;
+				
 				// cout << "ADD INDEX IS: " << add_index << endl;
 				mainMemory[add_index] = data;
 				s++;
@@ -55,16 +55,28 @@ void MemoryHierarchy::read_in_memory(){
 			// mainMemory.push_back({address,data});
         }
 
+
+
         fp_inp.close();
     }
+
+	// cout << "DATA " << data << endl;
 	// printf("successfully read in memory\n");
 	
 	// int result = MAIN_MEMORY_SIZE/WORD_SIZE;
 	// printf("there are %i things allocated but looped %i times\n",result,s);
 
+
+
 	// for (int i = 0; i < (MAIN_MEMORY_SIZE/WORD_SIZE); i++){
+
 	// 	cout << "address: " << i << " data: " << mainMemory[i] << endl;
+	// 	// printf("i is %i\n",i);
 	// }
+
+
+
+
 }
 
 uint32_t MemoryHierarchy::get_my_index(uint32_t addr){
@@ -90,11 +102,27 @@ uint32_t* MemoryHierarchy::find_in_main_memory_block(uint32_t addr,uint32_t bloc
 	return &mainMemory[index];
 }
 
+uint32_t MemoryHierarchy::find_in_main_memory_word(uint32_t addr){
+
+	// like we did in the other function
+	uint32_t index = addr / WORD_SIZE;
+	
+	// uint32_t add_index;
+	// add_index = get_my_index(addr);
+	// uint32_t memory;
+	// memory = mainMemory[add_index];
+
+	// return memory;
+	return mainMemory[index];
+}
+
+
+
 void MemoryHierarchy::write_to_main_memory_word(uint32_t addr, uint32_t data){
 	// printf("\tUPDATING MAIN MEMORY\n");
-	uint32_t add_index;
-	add_index = get_my_index(addr);
-	mainMemory[add_index] = data;
+	// uint32_t add_index;
+	// add_index = get_my_index(addr);
+	mainMemory[addr/4] = data;
 
 	// numMain++;
 }
@@ -135,12 +163,13 @@ int main(int argc, char **argv) {
         while(getline(fp_inp, inp_line)) {
             stringstream inp_string(inp_line);
     	    if(getline(inp_string,parsed_line, ' ')) 
-		command = parsed_line;
+			command = parsed_line;
 	    if(getline(inp_string,parsed_line, ' ')) 
 		address = stoul(parsed_line, NULL, 16);
 	    if (!(command.compare("w"))) {
 	    	if(getline(inp_string,parsed_line, ' ')) {
 		    data = stoul(parsed_line, NULL, 16);
+			// cout << "Data is " << data << endl;
 		}
 	    }
 
@@ -178,12 +207,14 @@ int main(int argc, char **argv) {
 			// check the L1 cache
 			if(L1Cache.read(address, &data)) {
 				// read hit L1
-				cout <<"L1 read hit at 0x"<<hex<<address<<"\tData: 0x" <<hex<< data<<"\n";
+				uint32_t show = memH.find_in_main_memory_word(address);
+				cout <<"L1 read hit at 0x"<<hex<<address<<"\tData: 0x" <<hex<< show<<"\n";
 				// no action needed
 			} else {
 				if (L2Cache.read(address, &data)){
 					// read hit L2
-					cout <<"L2 read hit at 0x"<<hex<<address<<"\tData: 0x" <<hex<< data<<"\n";
+					uint32_t show = memH.find_in_main_memory_word(address);
+					cout <<"L2 read hit at 0x"<<hex<<address<<"\tData: 0x" <<hex<< show<<"\n";
 
 					// uint32_t *data_block = memH.find_in_main_memory_block(address,L1Cache.getBlockSize());
 					uint32_t *data_block = L2Cache.find_data_block(address);
@@ -197,8 +228,9 @@ int main(int argc, char **argv) {
 					// find in main memoroy based on L1 block size
 					uint32_t *data_block1 = memH.find_in_main_memory_block(address,L1Cache.getBlockSize());
 					L1Cache.write_thru_miss(address,data_block1);
-
-					cout <<"L1 and L2 read miss at 0x"<<hex<<address<<"\tData: 0x" <<hex<< data<<"\n";
+					
+					uint32_t show = memH.find_in_main_memory_word(address);
+					cout <<"L1 and L2 read miss at 0x"<<hex<<address<<"\tData: 0x" <<hex<< show<<"\n";
 				}
 
 			}

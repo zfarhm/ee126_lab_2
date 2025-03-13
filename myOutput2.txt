@@ -1,9 +1,9 @@
 L1 and L2 write miss at 0x43200 Data: 0x12349876
 L1 and L2 write miss at 0x32980 Data: 0x98763452
 L1 and L2 write miss at 0x9840  Data: 0x34980120
-L1 and L2 read miss at 0x43204  Data: 0x34980120
-L1 read hit at 0x43200  Data: 0x0
-L1 and L2 read miss at 0x32988  Data: 0x0
+L1 and L2 read miss at 0x43204  Data: 0xc5bdf
+L1 read hit at 0x43200  Data: 0x12349876
+L1 and L2 read miss at 0x32988  Data: 0xa4cc8
 L1 write hit at 0x43204 Data: 0x98987676
 L1 and L2 write miss at 0x54040 Data: 0x436abcef
 
