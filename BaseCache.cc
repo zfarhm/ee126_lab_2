@@ -394,7 +394,7 @@ void BaseCache::write_thru_miss(uint32_t addr, uint32_t* data_block){
     cacheLines[index][LRU].valid = true;
     // printf("OFFSET--> %i\n",offset);
     // cacheLines[index][LRU].data = data_block;
-    // memcpy((cacheLines[index][LRU].data), data_block, blockSize);
+    memcpy((cacheLines[index][LRU].data), data_block, blockSize);
     // printf("### WRITE THRU WORKED ###");
     // make sure to update LRU
 

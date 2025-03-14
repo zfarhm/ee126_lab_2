@@ -97,7 +97,6 @@ uint32_t* MemoryHierarchy::find_in_main_memory_block(uint32_t addr,uint32_t bloc
 	// add_index = get_my_index(addr);
 	// uint32_t memory;
 	// memory = mainMemory[add_index];
-	numMain++;
 	// return memory;
 	return &mainMemory[index];
 }
@@ -120,15 +119,9 @@ uint32_t MemoryHierarchy::find_in_main_memory_word(uint32_t addr){
 
 void MemoryHierarchy::write_to_main_memory_word(uint32_t addr, uint32_t data){
 	// printf("\tUPDATING MAIN MEMORY\n");
-	// uint32_t add_index;
-	// add_index = get_my_index(addr);
-	mainMemory[addr/4] = data;
-
-	// numMain++;
-}
-
-int MemoryHierarchy::get_mainMem_hits(){
-	return numMain;
+	uint32_t add_index;
+	add_index = get_my_index(addr);
+	mainMemory[add_index] = data;
 }
 
 

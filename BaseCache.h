@@ -135,9 +135,6 @@ class BaseCache{
 // class MemoryHierarchy : public BaseCache{
 	class MemoryHierarchy{
 
-	private:
-		int numMain;
-
 	public:
 
 		int get_mainMem_hits(); 
