@@ -291,11 +291,11 @@ int main(int argc, char **argv) {
 	double miss_rate_L1 = 0;
 	double miss_rate_L2 = 0;
 
-	double L1_total_hits = L1Cache.getReadMisses() + L1Cache.getReadHits() + L1Cache.getWriteMisses() + L1Cache.getWriteHits();
-	double L2_total_hits = L2Cache.getReadMisses() + L2Cache.getReadHits() + L2Cache.getWriteMisses() + L2Cache.getWriteHits();
+	double L1_total_hits = L1Cache.getReadMisses() + L1Cache.getReadHits() ;
+	double L2_total_hits = L2Cache.getReadMisses() + L2Cache.getReadHits();
 
-	double L1_misses = L1Cache.getReadMisses() + L1Cache.getWriteMisses();
-	double L2_misses = L2Cache.getReadMisses() + L2Cache.getWriteMisses();
+	double L1_misses = L1Cache.getReadMisses();
+	double L2_misses = L2Cache.getReadMisses();
 
 	if (!(L1_total_hits == 0)){
 		miss_rate_L1 = ( L1_misses / L1_total_hits );
@@ -309,7 +309,7 @@ int main(int argc, char **argv) {
 
 	if (!((round(miss_rate_L1) == 0) && (round(miss_rate_L2) == 0))){
 		AMAT = L1_time + (miss_rate_L1 * (L2_time +(miss_rate_L2 * mem_time)));
-		AMAT1 = ceil(AMAT);
+		AMAT1 = floor(AMAT);
 	}
 	
 	min_time1 = round(min_time);
