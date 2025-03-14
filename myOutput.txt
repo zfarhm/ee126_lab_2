@@ -1,14 +1,14 @@
-L1 and L2 write miss at 0x6abca Data: 0x349823ab
-L1 and L2 write miss at 0x234a0 Data: 0xaf874522
-L1 and L2 write miss at 0xabcf0 Data: 0x34231209
-L1 and L2 read miss at 0x41290  Data: 0xfffcb2dd
-L1 and L2 read miss at 0x6abca  Data: 0x349823ab
-L1 write hit at 0x6abca Data: 0x349823ac
-L1 read hit at 0x6abca  Data: 0x349823ac
-L1 write hit at 0x6abce Data: 0x11110000
-L1 and L2 write miss at 0x6aaca Data: 0x86764378
-L1 read hit at 0x6abce  Data: 0x11110000
-L1 and L2 write miss at 0x6a0ca Data: 0x87687659
+L1 and L2 write miss at 0x6abca    Data: 0x349823ab
+L1 and L2 write miss at 0x234a0    Data: 0xaf874522
+L1 and L2 write miss at 0xabcf0    Data: 0x34231209
+L1 and L2 read miss at 0x41290    Data: 0xfffcb2dd
+L1 and L2 read miss at 0x6abca    Data: 0x349823ab
+L1 write hit at 0x6abca    Data: 0x349823ac
+L1 read hit at 0x6abca    Data: 0x349823ac
+L1 write hit at 0x6abce    Data: 0x11110000
+L1 and L2 write miss at 0x6aaca    Data: 0x86764378
+L1 read hit at 0x6abce    Data: 0x11110000
+L1 and L2 write miss at 0x6a0ca    Data: 0x87687659
 
 L1 Read Hits (HitRate): 2 (50%)
 L1 Read Misses (MissRate): 2 (50%)
@@ -25,3 +25,5 @@ L2 Overall Hit Rate: 22%
 L2 Overall Miss Rate: 78%
 
 Average memory access time (AMAT) (Reads): 358ns
+Minimum access time: 1ns
+Maximum access time: 716ns
