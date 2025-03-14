@@ -306,6 +306,10 @@ int main(int argc, char **argv) {
 	min_time1 = round(min_time);
 	max_time1 = round(max_time);
 
+	if (min_time1 == 1000){
+		min_time1 = 0;
+	}
+
 	printf("\nAverage memory access time (AMAT) (Reads): %ins\n",AMAT1);
 	printf("Minimum access time: %ins\n",min_time1);
 	printf("Maximum access time: %ins\n",max_time1);
