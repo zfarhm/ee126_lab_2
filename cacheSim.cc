@@ -211,15 +211,13 @@ int main(int argc, char **argv) {
 			// check the L1 cache
 			if(L1Cache.read(address, &data)) {
 				// read hit L1
-				uint32_t show = memH.find_in_main_memory_word(address);
-				cout <<"L1 read hit at 0x"<<hex<<address<<"    Data: 0x" <<hex<< show<<"\n";
+				cout <<"L1 read hit at 0x"<<hex<<address<<"    Data: 0x" <<hex<< data<<"\n";
 				time = L1_time;
 				// no action needed
 			} else {
 				if (L2Cache.read(address, &data)){
 					// read hit L2
-					uint32_t show = memH.find_in_main_memory_word(address);
-					cout <<"L2 read hit at 0x"<<hex<<address<<"    Data: 0x" <<hex<< show<<"\n";
+					cout <<"L2 read hit at 0x"<<hex<<address<<"    Data: 0x" <<hex<< data<<"\n";
 
 					// uint32_t *data_block = memH.find_in_main_memory_block(address,L1Cache.getBlockSize());
 					uint32_t *data_block = L2Cache.find_data_block(address);
